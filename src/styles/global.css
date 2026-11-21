@@ -1,0 +1,119 @@
+/* Shared styles. Every value comes from tokens.css. */
+@import './tokens.css';
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; background: var(--d-bg); scroll-padding-top: var(--nav-h); }
+body {
+  margin: 0; overflow-x: clip;
+  font: 400 var(--t-body)/1.6 var(--font-sans);
+  font-feature-settings: "tnum" 1;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+img, video, canvas { display: block; max-width: 100%; }
+h1, h2, h3, p, ol, ul, dl, dd, figure, table { margin: 0; }
+h1, h2, h3 { font-weight: var(--w-heading); }
+ol, ul { padding: 0; list-style: none; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent, var(--em-500)); outline-offset: 3px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.skip { position: absolute; left: var(--gutter); top: -80px; z-index: 60; padding: 10px 14px; background: var(--em-500); color: var(--d-bg); text-decoration: none; }
+.skip:focus { top: 12px; }
+.nw { white-space: nowrap; }
+
+/* links: emerald underline, emerald text on hover */
+a { color: inherit; text-underline-offset: .22em; text-decoration-thickness: 1px; }
+.textlink, .prose a { text-decoration: underline; text-decoration-color: var(--accent); transition: color var(--dur-1) var(--ease-out); }
+.textlink:hover, .prose a:hover { color: var(--accent-hi); }
+
+/* pending facts: visible, sober, never styled as content */
+.tbc { font: 400 var(--t-data)/1.4 var(--font-mono); color: var(--ink-2); white-space: normal; overflow-wrap: anywhere; }
+
+.wrap { width: 100%; max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+.data { font: 400 var(--t-data)/1.5 var(--font-mono); letter-spacing: 0; }
+
+/* ---------- headings ---------- */
+.h2 { font: var(--w-heading) var(--t-h2)/1.02 var(--font-sans); letter-spacing: var(--track-display); }
+.h3 { font: var(--w-heading) var(--t-h3)/1.1 var(--font-sans); letter-spacing: var(--track-heading); }
+.lead { font-size: var(--t-lead); line-height: 1.42; }
+.muted { color: var(--ink-2); }
+.idx { color: var(--accent); font-variant-numeric: tabular-nums; }
+.key { color: var(--accent); }
+
+/* ---------- controls: one style, 1px line, 4px radius, emerald fill on hover ---------- */
+.btn {
+  display: inline-flex; align-items: center; gap: 14px; min-height: 44px;
+  padding: 0 18px; border: 1px solid currentColor; border-radius: var(--r-control);
+  font: 500 var(--t-nav)/1 var(--font-sans); letter-spacing: var(--track-nav); text-transform: uppercase;
+  text-decoration: none; background: transparent; cursor: pointer;
+  transition: background-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out);
+}
+.btn:hover { background: var(--fill); border-color: var(--fill); color: var(--on-fill); }
+.btn .arw { font-family: var(--font-mono); letter-spacing: 0; transition: transform var(--dur-2) var(--ease-out); }
+.btn:hover .arw { transform: translateX(3px); }
+
+/* small motion toggle on video (WCAG 2.2.2) */
+.mtoggle {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 36px; padding: 0 12px;
+  border: 1px solid var(--d-line-strong); border-radius: var(--r-control); background: transparent; color: var(--d-ink);
+  font: 500 11px/1 var(--font-sans); letter-spacing: var(--track-nav); text-transform: uppercase; cursor: pointer;
+  transition: border-color var(--dur-1) var(--ease-out);
+}
+.mtoggle:hover { border-color: var(--accent); }
+.mtoggle i { width: 8px; height: 10px; border-left: 2px solid currentColor; border-right: 2px solid currentColor; }
+.mtoggle[aria-pressed="true"] i { width: 0; height: 0; border: 0; border-left: 9px solid currentColor; border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+.rm .mtoggle, html:not(.js) .mtoggle { display: none; }
+
+/* ---------- media layers ---------- */
+.media { position: absolute; inset: 0; overflow: hidden; background: var(--d-bg); }
+.media video, .media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: var(--r-image); }
+.media video { opacity: 0; transition: opacity var(--dur-3) var(--ease-out); }
+.media video.on { opacity: 1; }
+.veil { position: absolute; inset: 0; pointer-events: none; }
+.media-empty { position: absolute; inset: 0; display: grid; place-items: center; background: var(--d-bg-2); }
+.media-empty .tbc { color: var(--d-ink-2); }
+
+/* costmap in emerald: the recording is shown as a map (inverted to a graphite ground)
+   and its occupied and inflated cells take the emerald hue at low strength. Hue only. */
+.costmap .media video, .costmap .media img { filter: grayscale(1) invert(1) brightness(.62) contrast(1.5); }
+.costmap .media::after { content: ""; position: absolute; inset: 0; background: var(--em-500); mix-blend-mode: color; opacity: .4; pointer-events: none; }
+
+/* ---------- full-bleed dark chapter ---------- */
+.chapter { position: relative; min-height: min(92svh, 980px); display: flex; align-items: flex-end; overflow: hidden; isolation: isolate; }
+.chapter .media { z-index: -2; }
+.chapter .veil { z-index: -1; background: linear-gradient(90deg, rgba(var(--veil-rgb), .74) 0, rgba(var(--veil-rgb), .36) 52%, rgba(var(--veil-rgb), .18) 100%), rgba(var(--veil-rgb), .18); }
+.chapter-copy { position: relative; width: 100%; padding-bottom: clamp(40px, 7vw, 96px); padding-top: calc(var(--nav-h) + 48px); }
+.chapter-copy > div { max-width: 34rem; }
+.chapter-copy .h2 { margin-bottom: var(--s-5); }
+.chapter-copy p { color: var(--d-ink); max-width: 32rem; }
+.chapter-foot { display: flex; justify-content: space-between; align-items: center; gap: var(--s-4); flex-wrap: wrap; margin-top: var(--s-7); padding-top: var(--s-4); border-top: 1px solid rgba(var(--d-ink-rgb), .22); }
+.chapter-foot .data { color: var(--d-ink-2); }
+
+/* ---------- reveal on scroll (opacity + 16px, 600 ms ease-out, once) ---------- */
+.motion .reveal { opacity: 0; transform: translateY(16px); transition: opacity var(--dur-3) var(--ease-out), transform var(--dur-3) var(--ease-out); }
+.motion .reveal.in { opacity: 1; transform: none; }
+
+/* ---------- page transitions (native cross-document View Transitions) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation-duration: var(--dur-2); animation-timing-function: var(--ease-out); }
+  ::view-transition-group(feature-media), ::view-transition-group(feature-title) { animation-duration: var(--dur-morph); animation-timing-function: var(--ease-out); }
+  ::view-transition-old(feature-media), ::view-transition-new(feature-media) { height: 100%; object-fit: cover; overflow: clip; }
+  ::view-transition-group(site-nav) { animation-duration: var(--dur-1); }
+}
+
+/* ---------- footer ---------- */
+.foot { padding: var(--s-6) 0 var(--s-7); border-top: 1px solid var(--line); font-size: var(--t-small); color: var(--ink-2); }
+.foot .wrap { display: flex; justify-content: space-between; gap: var(--s-4); flex-wrap: wrap; }
+.foot a { color: var(--ink); text-decoration-color: var(--accent); }
+.foot a:hover { color: var(--accent); }
+
+/* ---------- shared section scaffolding ---------- */
+.sec { padding-top: var(--section); }
+.sec-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s-5); flex-wrap: wrap; padding-bottom: var(--s-7); }
+.sec-head .muted { font-size: var(--t-small); }
+.sec-head .h2 .idx { display: block; font-size: var(--t-small); line-height: 1.4; letter-spacing: 0; margin-bottom: var(--s-3); }
+
+/* narrow screens: text sits low across the full width, so the veil darkens from the bottom */
+@media (max-width: 860px) {
+  .chapter.chapter .veil { background: linear-gradient(0deg, rgba(var(--veil-rgb), .92) 0, rgba(var(--veil-rgb), .8) 60%, rgba(var(--veil-rgb), .35) 90%), rgba(var(--veil-rgb), .25); }
+}

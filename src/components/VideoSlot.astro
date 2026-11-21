@@ -1,0 +1,45 @@
+---
+// Deferred video slot: the poster paints first; the <video> gets its MP4 + WebM sources from site.ts
+// only after load, only near the viewport, and never with prefers-reduced-motion or Save-Data.
+// Pauses off-screen and in hidden tabs. Pair it with <MotionToggle /> inside a [data-motion-scope].
+interface Props {
+  /** base name in public/media/: <src>.mp4, <src>.webm, <src>-poster.webp */
+  src: string;
+  width: number;
+  height: number;
+  /** what the clip shows; omit for decorative video (the hero) */
+  label?: string;
+  /** above the fold: poster loads eagerly with high priority */
+  eager?: boolean;
+  /** CSS object-position */
+  position?: string;
+}
+const { src, width, height, label, eager = false, position } = Astro.props;
+const base = `/media/${src}`;
+const style = position ? `object-position: ${position}` : undefined;
+---
+
+<div class="media" aria-hidden={label ? undefined : 'true'}>
+  <img
+    src={`${base}-poster.webp`}
+    width={width}
+    height={height}
+    alt=""
+    style={style}
+    loading={eager ? 'eager' : 'lazy'}
+    decoding={eager ? 'auto' : 'async'}
+    fetchpriority={eager ? 'high' : undefined}
+  />
+  <video
+    muted
+    loop
+    playsinline
+    preload="none"
+    disablepictureinpicture
+    tabindex={label ? undefined : -1}
+    aria-label={label}
+    data-src={`${base}.mp4`}
+    data-webm={`${base}.webm`}
+    style={style}
+  ></video>
+</div>

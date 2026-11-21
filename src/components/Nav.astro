@@ -1,0 +1,82 @@
+---
+// Fixed navigation. Glass only while it sits over video (site.ts sets data-over from the [data-tone]
+// section under it); solid graphite or warm grey otherwise. The language switch links to the same page
+// in the other language.
+import { type Lang, url, useT, LOCALES } from '../i18n/ui';
+import { site } from '../data/site';
+
+interface Props {
+  lang: Lang;
+  path: string;
+  over: 'video' | 'dark' | 'light';
+  current?: 'work' | 'about';
+  progress?: boolean;
+  home?: boolean;
+}
+const { lang, path, over, current, progress = false, home = false } = Astro.props;
+const t = useT(lang);
+const homeUrl = url(lang);
+const anchor = (id: string) => (home ? `#${id}` : `${homeUrl}#${id}`);
+---
+
+<header class="nav" data-over={over}>
+  <div class="wrap">
+    <a class="brand" href={homeUrl}>{site.name}</a>
+    <nav aria-label={t('nav.label')}>
+      <ul>
+        <li><a href={anchor('work')} aria-current={current === 'work' ? 'page' : undefined}>{t('nav.work')}</a></li>
+        <li class="hide-m"><a href={anchor('credentials')}>{t('nav.credentials')}</a></li>
+        <li class="hide-s"><a href={url(lang, 'about/')} aria-current={current === 'about' ? 'page' : undefined}>{t('nav.about')}</a></li>
+        <li class="hide-xs"><a href={anchor('contact')}>{t('nav.contact')}</a></li>
+        <li class="lang" role="group" aria-label={t('nav.lang')}>
+          {LOCALES.map((l) => (
+            <a href={url(l, path)} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined}>{l.toUpperCase()}</a>
+          ))}
+        </li>
+      </ul>
+    </nav>
+  </div>
+  {progress && <span class="progress" aria-hidden="true"></span>}
+</header>
+
+<style is:global>
+  .nav {
+    position: fixed; inset: 0 0 auto 0; z-index: 40; height: var(--nav-h);
+    color: var(--d-ink); border-bottom: 1px solid transparent;
+    --accent: var(--em-500);
+    transition: background-color var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out), border-color var(--dur-2) var(--ease-out);
+    view-transition-name: site-nav;
+  }
+  .nav .wrap { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--s-5); }
+  .nav a { font: 500 var(--t-nav)/1 var(--font-sans); letter-spacing: var(--track-nav); text-transform: uppercase; text-decoration: none; white-space: nowrap; }
+  .brand { padding: 10px 0; }
+  .nav ul { display: flex; align-items: center; gap: clamp(14px, 3vw, 40px); }
+  .nav ul a { position: relative; display: inline-block; padding: 10px 0; color: inherit; opacity: .78; transition: opacity var(--dur-1) var(--ease-out); }
+  .nav ul a:hover, .nav ul a[aria-current] { opacity: 1; }
+  /* active item: a 1px emerald rule under the label */
+  .nav ul a::after { content: ""; position: absolute; left: 0; right: 0; bottom: 3px; height: 1px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform var(--dur-2) var(--ease-out); }
+  .nav ul a[aria-current]::after { transform: scaleX(1); }
+  .nav .lang { display: inline-flex; gap: 2px; }
+  .nav .lang a { padding: 10px 6px; opacity: .6; }
+  .nav .lang a::after { left: 6px; right: 6px; }
+
+  .nav[data-over="video"] { background: rgba(var(--veil-rgb), .55); }
+  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .nav[data-over="video"] { background: rgba(var(--veil-rgb), .22); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+  }
+  .nav[data-over="dark"] { background: var(--d-bg); border-bottom-color: var(--d-line); }
+  .nav[data-over="light"] { background: var(--l-bg); color: var(--l-ink); border-bottom-color: var(--l-line); --accent: var(--em-700); }
+  .nav[data-over="light"] ul a { opacity: .82; }
+  @media (max-width: 760px) { .nav .hide-m { display: none; } }
+  @media (max-width: 560px) { .nav .hide-s { display: none; } }
+  @media (max-width: 400px) { .nav .hide-xs { display: none; } .nav ul { gap: 12px; } }
+
+  /* reading progress (Ficha): a 2px emerald line on the nav's lower edge */
+  .progress { position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--accent); transform-origin: left; transform: scaleX(var(--p, 0)); pointer-events: none; }
+  @supports (animation-timeline: scroll()) {
+    .progress { animation: progress linear both; }
+    /* separate rule: the CSS minifier would otherwise fold the timeline into the shorthand, which browsers reject */
+    .nav .progress { animation-timeline: scroll(root block); }
+    @keyframes progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  }
+</style>

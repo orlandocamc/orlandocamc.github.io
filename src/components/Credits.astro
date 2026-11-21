@@ -1,0 +1,23 @@
+---
+// Team & credit: every person on the team, by name, with what they did. Orlando's line is his Aporte.
+// Tone rule: say precisely what Orlando did, never what the others did not do.
+import { rich } from '../lib/text';
+import type { Ficha } from '../lib/content';
+
+interface Props { team: Ficha['data']['team']; note?: string }
+const { team, note } = Astro.props;
+---
+
+<ul class="tbl">
+  {team.map((p) => (
+    <li>
+      <h3 class="h3">{p.name}</h3>
+      <div>
+        <p class="muted" set:html={rich(p.credit)} />
+        {p.stack && <p class="data">{p.stack}</p>}
+      </div>
+    </li>
+  ))}
+</ul>
+<slot />
+{note && <p class="note" set:html={rich(note)} />}

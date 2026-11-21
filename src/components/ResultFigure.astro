@@ -1,0 +1,11 @@
+---
+// One measured figure: value + unit in emerald, and where and how it was measured.
+import { rich } from '../lib/text';
+interface Props { value: string; unit: string; context: string }
+const { value, unit, context } = Astro.props;
+---
+
+<div class="result">
+  <p class="stat">{value}<small>{unit}</small></p>
+  <p class="ctx" set:html={rich(context)} />
+</div>

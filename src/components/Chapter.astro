@@ -1,0 +1,60 @@
+---
+// Dark video chapter that interrupts the light dossier: full bleed, or split with the video on one side.
+import VideoSlot from './VideoSlot.astro';
+import MotionToggle from './MotionToggle.astro';
+import { rich } from '../lib/text';
+import type { Lang } from '../i18n/ui';
+import type { Ficha } from '../lib/content';
+
+type ChapterData = Ficha['data']['media']['chapters'][number];
+interface Props {
+  lang: Lang;
+  chapter: ChapterData;
+  /** first chapter of the featured Ficha: target of the page transition from the home page */
+  morph?: boolean;
+}
+const { lang, chapter: c, morph = false } = Astro.props;
+const hid = `ch-${c.id}`;
+const caption = c.caption.includes(c.credit) ? c.caption : `${c.caption} — ${c.credit}`;
+---
+
+{c.layout === 'full' ? (
+  <section class:list={['chapter', 'ch-full', 'tone-video', { morph }]} data-tone="video" data-motion-scope aria-labelledby={hid}>
+    <VideoSlot src={c.video.src} width={c.video.width} height={c.video.height} label={c.video.label} position="55% 50%" />
+    <div class="veil"></div>
+    <div class="chapter-copy wrap">
+      <div class="reveal">
+        <h2 id={hid} class="h2">{c.title}</h2>
+        <p set:html={rich(c.body)} />
+      </div>
+      <div class="chapter-foot">
+        <p class="data" set:html={rich(caption)} />
+        <MotionToggle lang={lang} />
+      </div>
+    </div>
+  </section>
+) : (
+  <section class:list={['split', 'tone-dark', { rev: c.layout === 'split-rev', 'tone-dark-2': c.alt }]} data-tone="dark" data-motion-scope aria-labelledby={hid}>
+    {c.layout === 'split-rev' && (
+      <div class:list={['split-media', 'tone-video', { costmap: c.costmap }]} data-tone="video">
+        <VideoSlot src={c.video.src} width={c.video.width} height={c.video.height} label={c.video.label} />
+      </div>
+    )}
+    <div class="chapter-copy">
+      <div class="reveal">
+        <h2 id={hid} class="h2">{c.title}</h2>
+        <p set:html={rich(c.body)} />
+        <div class="chapter-foot">
+          <p class="data" set:html={rich(caption)} />
+          <MotionToggle lang={lang} />
+        </div>
+      </div>
+    </div>
+    {/* plain split: copy left, video right; reversed split: video left */}
+    {c.layout === 'split' && (
+      <div class:list={['split-media', 'tone-video', { costmap: c.costmap }]} data-tone="video">
+        <VideoSlot src={c.video.src} width={c.video.width} height={c.video.height} label={c.video.label} />
+      </div>
+    )}
+  </section>
+)}

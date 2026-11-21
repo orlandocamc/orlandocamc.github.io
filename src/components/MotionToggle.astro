@@ -1,0 +1,11 @@
+---
+// Pause / play for the video (and the 3D map) in the nearest [data-motion-scope]. WCAG 2.2.2.
+// Hidden with reduced motion and without JS: nothing moves then.
+import { type Lang, useT } from '../i18n/ui';
+interface Props { lang: Lang }
+const t = useT(Astro.props.lang);
+---
+
+<button class="mtoggle" type="button" aria-pressed="false" data-motion-toggle data-label-pause={t('motion.pause')} data-label-play={t('motion.play')}>
+  <i aria-hidden="true"></i><span>{t('motion.pause')}</span>
+</button>

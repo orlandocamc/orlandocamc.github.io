@@ -1,0 +1,22 @@
+# build output
+dist/
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# Satoshi is downloaded from Fontshare at build time (see scripts/fetch-fonts.mjs):
+# the licence allows self-hosting on the site, not distribution through a public repository.
+public/fonts/satoshi/*.woff2
+
+# logs
+npm-debug.log*
+
+# environment variables
+.env
+.env.production
+
+# OS / editor
+.DS_Store
+.idea/

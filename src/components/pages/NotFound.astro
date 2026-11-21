@@ -1,0 +1,31 @@
+---
+import Base from '../../layouts/Base.astro';
+import { type Lang, url, useT, otherLang } from '../../i18n/ui';
+import { site } from '../../data/site';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = useT(lang);
+const o = otherLang(lang);
+const to = useT(o);
+---
+
+<Base lang={lang} title={`${t('nf.title')} · ${site.name}`} description={t('nf.body')} path="404/" tone="dark" navOver="dark" noindex>
+  <section class="sec nf tone-dark" data-tone="dark" aria-labelledby="nf-h">
+    <div class="wrap">
+      <p class="data muted">404</p>
+      <h1 id="nf-h" class="h2">{t('nf.title')}</h1>
+      <p class="lead muted">{t('nf.body')}</p>
+      <p class="nf-links">
+        <a class="btn" href={url(lang)}>{t('nf.home')} <span class="arw" aria-hidden="true">→</span></a>
+        <a class="textlink" href={url(o)} lang={o} hreflang={o}>{to('nf.home')}</a>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf { min-height: 80svh; padding-top: calc(var(--nav-h) + var(--section)); padding-bottom: var(--section); }
+  .nf .h2 { margin: var(--s-4) 0 var(--s-5); }
+  .nf-links { display: flex; flex-wrap: wrap; gap: var(--s-5); align-items: center; margin-top: var(--s-7); }
+</style>

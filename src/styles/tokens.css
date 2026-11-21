@@ -1,0 +1,129 @@
+/* Orlando Camacho · design tokens (from the approved v3 prototype)
+   Greys with a green-graphite tint + emerald with a job. Two tones:
+   - dark:  hero, video chapters, home page (graphite canvas, light type)
+   - light: project file "technical dossier" (warm grey canvas, near-black type)
+   Components only read the role variables (--bg, --ink, --ink-2, --line, --accent…); a tone class sets them.
+
+   This is the ONLY file to edit to change typefaces or colours:
+   - typeface: the @font-face / @import block below + --font-sans / --font-mono
+   - colour:   the palettes, the emerald scale and the tone roles at the end */
+
+/* ---------- typefaces ----------
+   Satoshi (Indian Type Foundry, ITF Free Font License): self-hosted from public/fonts/satoshi/,
+   downloaded from Fontshare at build time by scripts/fetch-fonts.mjs. Only 400 and 500, never bold.
+   DM Mono (SIL OFL) from @fontsource, latin subset, for real technical data only. */
+@import '@fontsource/dm-mono/latin-400.css';
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/satoshi/satoshi-400.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/satoshi/satoshi-500.woff2") format("woff2");
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+/* Satoshi draws its en dash almost 1em wide, so 40–60 or 2025–2026 read as if they had an em dash.
+   This face takes only U+2013 from the system grotesk. Drop it from --font-sans with any other typeface. */
+@font-face {
+  font-family: "Range Dash";
+  src: local("Helvetica Neue"), local("HelveticaNeue"), local("Arial"), local("ArialMT"), local("Roboto");
+  unicode-range: U+2013;
+}
+
+:root {
+  /* ---- palette: dark (graphite with a slight green tint, never pure black) ---- */
+  --d-bg: #0B0F0E;           /* base canvas */
+  --d-bg-2: #0F1413;         /* alternate sections, for rhythm */
+  --d-ink: #EEF1EF;          /* 17.0:1 on --d-bg, 16.6:1 on --d-bg-2 */
+  --d-ink-2: #A3ABA7;        /* 8.2:1 on --d-bg, 8.0:1 on --d-bg-2 */
+  --d-line: #25302D;         /* 1px structural rule */
+  --d-line-strong: #5B6763;  /* 1px control border, 3.1:1 on both dark grounds */
+
+  /* ---- palette: light (dossier) ---- */
+  --l-bg: #F0EEEB;           /* warm grey canvas */
+  --l-ink: #0C0C0C;          /* 16.9:1 on --l-bg */
+  --l-ink-2: #55534F;        /* 6.6:1 on --l-bg */
+  --l-line: #C9C6C0;         /* 1px rule */
+  --l-line-strong: #0C0C0C;  /* section rule, control border */
+
+  /* ---- emerald scale: four steps, each with a job ----
+     --em-400 #34D399  over video: numbers, key figures, link hover, the live dot. 10.0:1 on --d-bg
+     --em-500 #10B981  dark tone: section numbers, figures, active nav, focus ring, reading progress,
+                       button hover fill (with --d-bg text, 7.6:1), credential markers, LiDAR sweep, costmap tint
+     --em-700 #047857  light tone: section numbers, figures, links, focus ring, reading progress. 4.7:1 on --l-bg
+     --em-800 #065F46  light tone: link hover, button hover fill (with --l-bg text, 6.6:1)
+     Never: glow, coloured shadows, gradients, glass panels, emerald backgrounds for whole sections. */
+  --em-400: #34D399;
+  --em-500: #10B981;
+  --em-700: #047857;
+  --em-800: #065F46;
+  --signal: var(--em-500);   /* LiDAR sweep (Hero3D reads this variable) */
+
+  /* veils: a darkening of the image itself, in graphite, never a panel */
+  --veil-rgb: 11, 15, 14;    /* = --d-bg as RGB, for rgba() */
+  --d-ink-rgb: 238, 241, 239; /* = --d-ink as RGB: hairlines over video */
+
+  /* ---- type: one family for everything except real data ---- */
+  --font-sans: "Range Dash", "Satoshi", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --w-display: 500;          /* big headings: 400–500, never bold */
+  --w-heading: 400;
+  --t-hero: clamp(3.2rem, 1.3rem + 6vw, 7.5rem);      /* name */
+  --t-display: clamp(3.4rem, 1.1rem + 7.6vw, 9.5rem); /* project title */
+  --t-h2: clamp(2.2rem, 1.45rem + 2.5vw, 3.9rem);     /* section heading */
+  --t-h3: clamp(1.5rem, 1.2rem + 1.1vw, 2.25rem);     /* row title */
+  --t-stat: clamp(3.4rem, 2rem + 4.8vw, 6.75rem);     /* measured figure */
+  --t-lead: clamp(1.2rem, 1.03rem + .55vw, 1.5rem);
+  --t-body: 1.0625rem;                                /* 17px */
+  --t-small: .9375rem;                                /* 15px */
+  --t-nav: .75rem;                                    /* 12px, uppercase, tracked: navigation only */
+  --t-data: .8125rem;                                 /* 13px mono, real technical data only */
+  --track-nav: .1em;
+  --track-display: -.02em;
+  --track-heading: -.012em;
+
+  /* ---- space (4px base) ---- */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px; --s-5: 24px;
+  --s-6: 32px; --s-7: 48px; --s-8: 64px; --s-9: 96px; --s-10: 128px; --s-11: 176px;
+  --gutter: clamp(20px, 4vw, 56px);
+  --max: 1440px;
+  --section: clamp(96px, 10vw, 176px);
+  --nav-h: 64px;
+
+  /* ---- shape: images square, controls 4px ---- */
+  --r-image: 0;
+  --r-control: 4px;
+
+  /* ---- motion: slow, ease-out, the interface never bounces ---- */
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --dur-1: 300ms;
+  --dur-2: 450ms;
+  --dur-3: 600ms;
+  --dur-morph: 560ms;        /* Plague-Bot image -> project-file chapter */
+}
+
+/* ---------- tones: role variables ---------- */
+.tone-dark, .tone-video {
+  --bg: var(--d-bg); --ink: var(--d-ink); --ink-2: var(--d-ink-2);
+  --line: var(--d-line); --line-strong: var(--d-line-strong);
+  --accent: var(--em-500); --accent-hi: var(--em-400);
+  --fill: var(--em-500); --on-fill: var(--d-bg);
+  background: var(--bg); color: var(--ink);
+}
+/* over video the brighter step carries figures and numbers: em-400 keeps 4.5:1 on the worst sampled frame */
+.tone-video { --accent: var(--em-400); }
+.tone-dark-2 { --bg: var(--d-bg-2); background: var(--bg); }
+.tone-light {
+  --bg: var(--l-bg); --ink: var(--l-ink); --ink-2: var(--l-ink-2);
+  --line: var(--l-line); --line-strong: var(--l-line-strong);
+  --accent: var(--em-700); --accent-hi: var(--em-800);
+  --fill: var(--em-800); --on-fill: var(--l-bg);
+  background: var(--bg); color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-1: 0ms; --dur-2: 0ms; --dur-3: 0ms; --dur-morph: 0ms; }
+}

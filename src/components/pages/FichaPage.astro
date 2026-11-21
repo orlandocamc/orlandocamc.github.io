@@ -1,0 +1,227 @@
+---
+// Ficha: a light technical dossier (header with specification rail, numbered sections on 1px rules)
+// interrupted by dark video chapters. Sections: Overview, Results (only with measured figures),
+// What I built, Team & credit, Evidence, Stack.
+import '../../styles/ficha.css';
+import Base from '../../layouts/Base.astro';
+import Chapter from '../Chapter.astro';
+import Figure from '../Figure.astro';
+import Credits from '../Credits.astro';
+import Evidence from '../Evidence.astro';
+import ResultFigure from '../ResultFigure.astro';
+import { type Lang, url, useT } from '../../i18n/ui';
+import { type Ficha, getFichas, slugOf } from '../../lib/content';
+import { pad2, rich, titleHtml, TBC } from '../../lib/text';
+import { site } from '../../data/site';
+
+interface Props { lang: Lang; ficha: Ficha }
+const { lang, ficha } = Astro.props;
+const t = useT(lang);
+const d = ficha.data;
+const slug = slugOf(ficha);
+const all = await getFichas(lang);
+const index = all.findIndex((f) => f.id === ficha.id);
+const next = all[(index + 1) % all.length];
+
+// Overview: the Markdown body, with "[… to confirm]" markers styled as pending facts.
+const overviewHtml = (ficha.rendered?.html ?? '').replace(TBC, (m) => `<span class="tbc">${m}</span>`);
+
+type SectionId = 'overview' | 'results' | 'built' | 'credits' | 'evidence' | 'stack';
+const sections: SectionId[] = ['overview', ...(d.results.length ? (['results'] as const) : []), 'built', 'credits', 'evidence', 'stack'];
+const number = (s: SectionId) => pad2(sections.indexOf(s) + 1);
+const titles: Record<SectionId, string> = {
+  overview: t('ficha.overview'), results: t('ficha.results'), built: t('ficha.built'),
+  credits: t('ficha.credits'), evidence: t('ficha.evidence'), stack: t('ficha.stack'),
+};
+
+// Interleave chapters with the dossier: consecutive sections share one light block.
+type Chap = (typeof d.media.chapters)[number];
+type Group = { kind: 'chapter'; c: Chap; first: boolean } | { kind: 'doc'; ids: SectionId[] } | { kind: 'empty' };
+const groups: Group[] = [];
+const chaptersAfter = (k: Chap['after']) => d.media.chapters.filter((c) => c.after === k);
+let firstChapter = true;
+const pushChapters = (k: Chap['after']) => {
+  for (const c of chaptersAfter(k)) { groups.push({ kind: 'chapter', c, first: firstChapter }); firstChapter = false; }
+};
+pushChapters('head');
+if (d.media.chapters.length === 0) groups.push({ kind: 'empty' });
+for (const s of sections) {
+  const lastGroup = groups[groups.length - 1];
+  if (lastGroup && lastGroup.kind === 'doc') lastGroup.ids.push(s);
+  else groups.push({ kind: 'doc', ids: [s] });
+  if (s !== 'evidence' && s !== 'stack') pushChapters(s);
+}
+const lastDoc = groups.filter((g) => g.kind === 'doc').pop();
+const figuresIn = (s: 'built' | 'credits') => d.media.figures.filter((f) => f.section === s);
+const team = d.team.filter((p) => !p.advisor);
+const advisor = d.team.find((p) => p.advisor);
+const publication = d.publication;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: d.title,
+  description: d.summary,
+  url: new URL(url(lang, `projects/${slug}/`), site.url).href,
+  inLanguage: lang,
+  creator: d.team.filter((p) => !p.advisor).map((p) => ({ '@type': 'Person', name: p.name })),
+  author: { '@type': 'Person', name: site.name, url: site.url, sameAs: [site.linkedin, site.github] },
+};
+---
+
+<Base
+  lang={lang}
+  title={`${d.title} — ${lang === 'es' ? 'Ficha' : 'Project file'} · ${site.name}`}
+  description={d.summary.replace(TBC, '').trim()}
+  path={`projects/${slug}/`}
+  tone="light"
+  navOver="light"
+  current="work"
+  progress
+  jsonLd={jsonLd}
+  ogType="article"
+>
+  <article aria-labelledby="ficha-h">
+    <section class="head tone-light" data-tone="light">
+      <div class="wrap">
+        <div class="head-top">
+          <a class="textlink" href={`${url(lang)}#work`}>← {t('ficha.back')}</a>
+          <span>{t('ficha.fileOf', { n: pad2(d.order), total: pad2(all.length) })}</span>
+        </div>
+        <h1 id="ficha-h" class:list={['title', { morph: d.featured }]} set:html={titleHtml(d.title)} />
+        <div class="head-grid">
+          <p class="lead" set:html={rich(d.lead)} />
+          <dl class="spec">
+            <div><dt>{t('ficha.role')}</dt><dd>{d.role}</dd></div>
+            <div>
+              <dt>{t('ficha.team')}</dt>
+              <dd>
+                {team.map((p) => p.name).join(', ')}
+                {advisor && <span class="muted">{t('ficha.advisor')}: {advisor.name}</span>}
+              </dd>
+            </div>
+            {d.recognitions.length > 0 && (
+              <div><dt>{t('ficha.recognition')}</dt><dd>{d.recognitions.map((r) => <span>{r.title} · {r.event}</span>)}</dd></div>
+            )}
+            {publication && <div><dt>{t('ficha.publication')}</dt><dd>{publication.short}</dd></div>}
+            <div><dt>{t('ficha.period')}</dt><dd set:html={rich(d.period)} /></div>
+            {d.links.length > 0 && (
+              <div><dt>{t('ficha.links')}</dt><dd>{d.links.map((l) => <span><a class="textlink" href={l.url}>{l.label}</a></span>)}</dd></div>
+            )}
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    {groups.map((g) => {
+      if (g.kind === 'chapter') return <Chapter lang={lang} chapter={g.c} morph={g.first && d.featured} />;
+      if (g.kind === 'empty') return (
+        <section class="chapter empty tone-video" data-tone="video" aria-label={t('ficha.videoTbc')}>
+          <div class="media-empty"><span class="tbc">{t('ficha.videoTbc')}</span></div>
+        </section>
+      );
+      return (
+        <div class="tone-light" data-tone="light">
+          <div class="wrap">
+            {g.ids.map((s) => (
+              <section class="doc reveal" aria-labelledby={`s-${s}`}>
+                <div class="doc-sec">
+                  <header><span class="n">{number(s)}</span><h2 id={`s-${s}`} class="h3">{titles[s]}</h2></header>
+
+                  {s === 'overview' && <div class="doc-body prose" set:html={overviewHtml} />}
+
+                  {s === 'results' && (
+                    <div class="doc-body stats" style={`--n: ${d.results.length}`}>
+                      {d.results.map((r) => <ResultFigure value={r.value} unit={r.unit} context={r.context} />)}
+                    </div>
+                  )}
+
+                  {s === 'built' && (
+                    <div class="doc-body">
+                      <ul class="tbl">
+                        {d.built.map((b) => (
+                          <li>
+                            <h3 class="h3">{b.title}</h3>
+                            <div>
+                              {b.data && <p class="data">{b.data}</p>}
+                              {b.detail && <p class="muted" set:html={rich(b.detail)} />}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                      {figuresIn('built').length > 0 && (
+                        <div class="figs">{figuresIn('built').map((f) => <Figure lang={lang} figure={f} />)}</div>
+                      )}
+                    </div>
+                  )}
+
+                  {s === 'credits' && (
+                    <div class="doc-body">
+                      <Credits team={d.team} note={d.teamNote}>
+                        {figuresIn('credits').length > 0 && (
+                          <div class="figs">{figuresIn('credits').map((f) => <Figure lang={lang} figure={f} />)}</div>
+                        )}
+                      </Credits>
+                    </div>
+                  )}
+
+                  {s === 'evidence' && (
+                    <div class="doc-body docs">
+                      {d.evidence.map((e, i) => (
+                        'report' in e
+                          ? <Evidence lang={lang} report={e.report} note={e.note} headingId={`ev-${i}`} />
+                          : <article aria-labelledby={`ev-${i}`}><h3 id={`ev-${i}`}>{t('ficha.evidence')}</h3><p class="tbc">{e.pending}</p></article>
+                      ))}
+                      {publication && (
+                        <article aria-labelledby="ev-paper">
+                          <h3 id="ev-paper">{t('ev.paper')}</h3>
+                          <p class="paper-title">{publication.title}</p>
+                          <p class="meta">{publication.status} · {publication.venue}{publication.number && ` · ${lang === 'es' ? 'artículo n.º' : 'paper no.'} ${publication.number}`}</p>
+                          <p class="authors">
+                            {publication.authors.map((a, i) => (
+                              <>{a === site.name ? <b>{a}</b> : a}{i < publication.authors.length - 1 ? ', ' : ''}</>
+                            ))}
+                          </p>
+                          {publication.url
+                            ? <a class="lnk textlink" href={publication.url}>{publication.url}</a>
+                            : <span class="lnk tbc">[{t('ev.paper').toLowerCase()} — link to confirm]</span>}
+                        </article>
+                      )}
+                      {d.recognitions.length > 0 && (
+                        <article aria-labelledby="ev-recog">
+                          <h3 id="ev-recog">{t('ev.recognition')}</h3>
+                          <ul class="recog">
+                            {d.recognitions.map((r) => (
+                              <li>
+                                <p>{r.title} · {r.event}</p>
+                                {r.note && <p set:html={rich(r.note)} />}
+                                {r.url && <p><a class="textlink" href={r.url}>{r.url}</a></p>}
+                              </li>
+                            ))}
+                          </ul>
+                        </article>
+                      )}
+                    </div>
+                  )}
+
+                  {s === 'stack' && (
+                    <dl class="doc-body stack">
+                      {d.stack.map((x) => <div><dt>{x.label}</dt><dd set:html={rich(x.value)} /></div>)}
+                    </dl>
+                  )}
+                </div>
+              </section>
+            ))}
+
+            {g === lastDoc && (
+              <nav class="pager" aria-label={t('ficha.next')}>
+                <a class="btn" href={`${url(lang)}#work`} data-vt-link="back"><span class="arw" aria-hidden="true">←</span> {t('ficha.all')}</a>
+                <a class="next textlink" href={url(lang, `projects/${slugOf(next)}/`)}>{t('ficha.next')}: {next.data.title} →</a>
+              </nav>
+            )}
+          </div>
+        </div>
+      );
+    })}
+  </article>
+</Base>

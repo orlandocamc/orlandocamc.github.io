@@ -1,0 +1,146 @@
+---
+// Page shell: <head> (SEO, Open Graph, hreflang, Person data), skip link, Nav, footer and shared script.
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
+import { type Lang, url, useT, LOCALES } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  /** path without locale, e.g. "projects/plague-bot-vr/" ("" for home) */
+  path: string;
+  /** body tone */
+  tone: 'dark' | 'light';
+  /** what the nav sits over on first paint */
+  navOver: 'video' | 'dark' | 'light';
+  /** which nav item is the current page */
+  current?: 'work' | 'about';
+  /** reading progress line under the nav (Ficha) */
+  progress?: boolean;
+  /** image to preload with high priority (the hero poster) */
+  preload?: string;
+  /** structured data for this page */
+  jsonLd?: Record<string, unknown>;
+  noindex?: boolean;
+  /** home page: nav links are in-page anchors (scroll-spy) */
+  home?: boolean;
+  /** ES pages carry a review marker for Orlando */
+  ogType?: 'website' | 'profile' | 'article';
+}
+
+const {
+  lang, title, description, path, tone, navOver, current, progress = false, preload, jsonLd,
+  noindex = false, home = false, ogType = 'website',
+} = Astro.props;
+const t = useT(lang);
+const canonical = new URL(url(lang, path), site.url).href;
+const alternates = LOCALES.map((l) => ({ lang: l, href: new URL(url(l, path), site.url).href }));
+const ogImage = new URL('/og.jpg', site.url).href;
+const goat = (import.meta.env.PUBLIC_GOATCOUNTER ?? '').trim();
+const goatEndpoint = goat ? (goat.startsWith('http') ? goat : `https://${goat}.goatcounter.com/count`) : '';
+const themeColor = tone === 'light' ? '#F0EEEB' : '#0B0F0E';
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {alternates.map((a) => <link rel="alternate" hreflang={a.lang} href={a.href} />)}
+    <link rel="alternate" hreflang="x-default" href={alternates[0].href} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content={themeColor} />
+    <meta name="color-scheme" content={tone === 'light' ? 'light' : 'dark'} />
+    <meta name="author" content={site.name} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${site.name} — ${t('hero.lede')}`} />
+    <meta property="og:locale" content={lang === 'es' ? 'es_MX' : 'en_US'} />
+    <meta property="og:locale:alternate" content={lang === 'es' ? 'en_US' : 'es_MX'} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="preload" href="/fonts/satoshi/satoshi-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/satoshi/satoshi-500.woff2" as="font" type="font/woff2" crossorigin />
+    {preload && <link rel="preload" as="image" href={preload} type="image/webp" fetchpriority="high" />}
+
+    <script is:inline>
+      // Before first paint: JS present, reduced motion, and whether the 3D map may load.
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('js');
+        var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (rm) d.classList.add('rm');
+        if (!rm && 'WebGLRenderingContext' in window) d.classList.add('will-3d');
+      })();
+    </script>
+    <!-- Prefetch (not prerender) on hover: a prerendered page that is activated with a cross-document
+         view transition logs "Transition was aborted … Page already revealed" in Chromium. -->
+    <script is:inline type="speculationrules">
+      { "prefetch": [ { "where": { "href_matches": "/*" }, "eagerness": "moderate" } ] }
+    </script>
+    {jsonLd && <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    {goatEndpoint && <script is:inline async data-goatcounter={goatEndpoint} src="https://gc.zgo.at/count.js" />}
+  </head>
+  <body class={tone === 'light' ? 'tone-light' : 'tone-dark'}>
+    {lang === 'es' && <Fragment set:html="<!-- ES: revisar con Orlando -->" />}
+    <a class="skip" href="#main">{t('skip')}</a>
+    <Nav lang={lang} path={path} over={navOver} current={current} progress={progress} home={home} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer lang={lang} tone={tone} />
+    <script>
+      import '../scripts/site';
+    </script>
+    <script is:inline>
+      // Cross-document view transitions. On the home page only the link that was used owns the shared
+      // names, so the Plague-Bot image morphs into the first chapter of its Ficha (560 ms ease-out) and back.
+      // Inline and at the end of <body> so pagereveal is handled before the first render.
+      // With reduced motion the CSS @view-transition rule is off and these events carry no transition.
+      (function () {
+        var KEY = 'vt-from', last = null;
+        function nameFrom(which) {
+          document.querySelectorAll('[data-vt]').forEach(function (el) {
+            var on = el.getAttribute('data-vt') === which;
+            var m = el.querySelector('[data-vt-media]'), t = el.querySelector('[data-vt-title]');
+            if (m) m.style.viewTransitionName = on ? 'feature-media' : 'none';
+            if (t) t.style.viewTransitionName = on ? 'feature-title' : 'none';
+          });
+        }
+        function clearNames() {
+          document.querySelectorAll('[data-vt-media],[data-vt-title]').forEach(function (el) { el.style.viewTransitionName = ''; });
+        }
+        document.addEventListener('click', function (e) {
+          var a = e.target && e.target.closest && e.target.closest('a[data-vt-link]');
+          if (a) last = a.getAttribute('data-vt-link');
+        });
+        window.addEventListener('pageswap', function (e) {
+          if (!e.viewTransition || !last || !document.querySelector('[data-vt]')) return;
+          nameFrom(last);
+          try { sessionStorage.setItem(KEY, last); } catch (err) {}
+        });
+        window.addEventListener('pagereveal', function (e) {
+          if (!e.viewTransition || !document.querySelector('[data-vt]')) return;
+          var from = null;
+          try { from = sessionStorage.getItem(KEY); } catch (err) {}
+          if (from) { nameFrom(from); e.viewTransition.finished.then(clearNames, clearNames); }
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+---
+import { type Lang, url, useT } from '../i18n/ui';
+import { site } from '../data/site';
+interface Props { lang: Lang; tone: 'dark' | 'light' }
+const { lang, tone } = Astro.props;
+const t = useT(lang);
+---
+
+<footer class:list={['foot', tone === 'light' ? 'tone-light' : 'tone-dark']} data-tone={tone}>
+  <div class="wrap">
+    <span>{t('foot.line')}</span>
+    <span>
+      <a href={url(lang, 'about/')}>{t('nav.about')}</a> · <a href={site.linkedin}>LinkedIn</a> · <a href={site.github}>GitHub</a>
+    </span>
+  </div>
+</footer>

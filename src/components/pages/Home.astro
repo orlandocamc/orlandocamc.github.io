@@ -1,0 +1,202 @@
+---
+// Home: dark hero (video + the real SLAM map in 3D), credentials, selected work (Plague-Bot as a
+// full-bleed chapter, the other Fichas as editorial rows), research, Entradas breves, contact.
+import '../../styles/home.css';
+import Base from '../../layouts/Base.astro';
+import VideoSlot from '../VideoSlot.astro';
+import Hero3D from '../Hero3D.astro';
+import MotionToggle from '../MotionToggle.astro';
+import Email from '../Email.astro';
+import { type Lang, url, useT } from '../../i18n/ui';
+import { getEntradas, getFichas, slugOf } from '../../lib/content';
+import { pad2, rich, titleHtml } from '../../lib/text';
+import { site } from '../../data/site';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = useT(lang);
+const fichas = await getFichas(lang);
+const featured = fichas.find((f) => f.data.featured) ?? fichas[0];
+const rows = fichas.filter((f) => f !== featured);
+const entradas = await getEntradas(lang);
+const research = entradas.filter((e) => e.data.kind === 'research');
+const software = entradas.filter((e) => e.data.kind === 'software');
+const fichaUrl = (f: (typeof fichas)[number]) => url(lang, `projects/${slugOf(f)}/`);
+const pb = featured.data;
+const paper = pb.publication;
+const homeFigures = pb.results.filter((r) => r.short);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  url: site.url,
+  image: new URL('/og.jpg', site.url).href,
+  description: t('hero.lede'),
+  alumniOf: { '@type': 'CollegeOrUniversity', name: site.university.name, alternateName: site.university.short, url: site.university.url },
+  knowsAbout: ['Autonomous mobile robots', 'ROS 2', 'SLAM', 'Teleoperation', 'Mixed reality'],
+  sameAs: [site.linkedin, site.github],
+};
+---
+
+<Base
+  lang={lang}
+  title={t('meta.title')}
+  description={t('meta.description')}
+  path=""
+  tone="dark"
+  navOver="video"
+  preload="/media/hero-greenhouse-poster.webp"
+  jsonLd={jsonLd}
+  home
+  ogType="profile"
+>
+  <section class="hero tone-video" data-tone="video" data-motion-scope aria-labelledby="hero-name">
+    <VideoSlot src="hero-greenhouse" width={848} height={480} eager />
+    <div class="veil"></div>
+    <Hero3D map="/media/slam-salon_v2.png" plan={{ src: '/media/slam-salon_v2-plan.webp', width: 1171, height: 875 }} />
+
+    <div class="hero-copy">
+      <p class="hero-kicker">{t('hero.kicker')}</p>
+      <h1 id="hero-name" class="hero-name"><span>Orlando</span> <span>Camacho</span></h1>
+      <p class="hero-lede">{t('hero.lede')}</p>
+      <div class="hero-actions">
+        <a class="btn" href={fichaUrl(featured)} data-vt-link="hero">{t('hero.cta')} <span class="arw" aria-hidden="true">→</span></a>
+        <a class="textlink" href="#contact">{t('nav.contact')}</a>
+      </div>
+    </div>
+
+    <div class="hero-meta">
+      <p class="data"><span class="sweep" aria-hidden="true"></span>{t('hero.meta')}<span class="opt"> · {t('hero.cells')}</span> · 0.05 m/cell</p>
+      <MotionToggle lang={lang} />
+    </div>
+  </section>
+
+  <section id="credentials" class="sec tone-dark" data-tone="dark" aria-labelledby="cred-h">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <h2 id="cred-h" class="h2"><span class="idx">01</span>{t('cred.h')}</h2>
+      </div>
+      <ul class="rows reveal">
+        {pb.recognitions.map((r) => (
+          <li><p class="h3">{r.title}</p><p>{r.event}</p></li>
+        ))}
+        <li><p class="h3">{t('cred.semillero')}</p><p>Semillero IBERO</p></li>
+        {paper && (
+          <li><p class="h3">{t('cred.paper')}</p><p>{paper.venue} · <i>{paper.title}</i></p></li>
+        )}
+      </ul>
+    </div>
+  </section>
+
+  <section id="work" class="sec tone-dark" aria-labelledby="work-h">
+    <div class="wrap" data-tone="dark">
+      <div class="sec-head reveal">
+        <h2 id="work-h" class="h2"><span class="idx">02</span>{t('work.h')}</h2>
+        <p class="muted">{t('work.count')}</p>
+      </div>
+    </div>
+
+    <article class="chapter feature tone-video" data-tone="video" data-vt="work" aria-labelledby="feature-t">
+      <div class="media" data-vt-media>
+        {pb.media.cover && (
+          <img src={`/media/${pb.media.cover.src}`} width={pb.media.cover.width} height={pb.media.cover.height} alt={pb.media.cover.alt} loading="lazy" decoding="async" />
+        )}
+      </div>
+      <div class="veil"></div>
+      <div class="chapter-copy wrap">
+        <div class="reveal">
+          <p class="feature-role"><span class="idx">{pad2(pb.order)}</span> · {pb.org ? `${pb.org} · ` : ''}{pb.role}</p>
+          <h3 id="feature-t" class="feature-title" data-vt-title set:html={titleHtml(pb.title)} />
+          <p set:html={rich(pb.summary)} />
+          {homeFigures.length > 0 && (
+            <dl>
+              {homeFigures.map((r) => (
+                <div><dt>{r.short}</dt><dd>{r.value} {r.unit}</dd></div>
+              ))}
+            </dl>
+          )}
+          <a class="btn" href={fichaUrl(featured)} data-vt-link="work">{t('work.open')} <span class="arw" aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </article>
+
+    <div class="wrap" data-tone="dark">
+      <ol class="work-rows reveal" aria-label={t('work.more')}>
+        {rows.map((f) => (
+          <li>
+            <span class="n">{pad2(f.data.order)}</span>
+            <h3 class="h3"><a href={fichaUrl(f)}>{f.data.title}</a></h3>
+            <p set:html={rich(f.data.summary)} />
+            <span class="st"><span class="when" set:html={rich(f.data.period)} />{f.data.role}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section id="research" class="sec tone-dark" data-tone="dark" aria-labelledby="res-h">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <h2 id="res-h" class="h2"><span class="idx">03</span>{t('research.h')}</h2>
+      </div>
+      <ul class="rows reveal">
+        {research.map((r) => (
+          <li><p class="h3">{r.data.title}</p><p>{r.data.summary}</p></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section id="entries" class="sec tone-dark tone-dark-2" data-tone="dark" aria-labelledby="ent-h">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <h2 id="ent-h" class="h2"><span class="idx">04</span>{t('entries.h')}</h2>
+        <p class="muted">{t('entries.sub')}</p>
+      </div>
+      <table class="entries reveal">
+        <thead>
+          <tr>
+            <th scope="col">{t('entries.entry')}</th>
+            <th scope="col">{t('entries.type')}</th>
+            <th scope="col">{t('entries.summary')}</th>
+            <th scope="col">{t('entries.year')}</th>
+            <th scope="col">{t('entries.links')}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {software.map((e) => (
+            <tr>
+              <th scope="row" class="entry-name">{e.data.title}</th>
+              <td>{e.data.type}</td>
+              <td class="muted"><span set:html={rich(e.data.summary)} />{e.data.stack && <span class="stk data">{e.data.stack}</span>}</td>
+              <td class="muted" set:html={rich(e.data.year ?? '[to confirm]')} />
+              <td class="lk">
+                {e.data.links.length
+                  ? e.data.links.map((l) => <a class="textlink" href={l.url}>{l.label}</a>)
+                  : <span class="tbc">[link — to confirm]</span>}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="contact" class="sec contact tone-dark" data-tone="dark" aria-labelledby="ct-h">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <h2 id="ct-h" class="h2"><span class="idx">05</span>{t('contact.h')}</h2>
+      </div>
+      <div class="reveal">
+        <p class="avail"><span class="live" aria-hidden="true"></span>{t('contact.avail')}</p>
+        <p class="avail-sub lead">{t('contact.where')}</p>
+        <div class="contact-links">
+          <a class="btn" href={site.linkedin}>LinkedIn <span class="arw" aria-hidden="true">→</span></a>
+          <a class="btn" href={site.github}>GitHub <span class="arw" aria-hidden="true">→</span></a>
+          <Email lang={lang} />
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

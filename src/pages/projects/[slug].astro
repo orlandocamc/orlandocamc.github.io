@@ -1,0 +1,15 @@
+---
+import type { GetStaticPaths } from 'astro';
+import FichaPage from '../../components/pages/FichaPage.astro';
+import { getFichas, slugOf, type Ficha } from '../../lib/content';
+
+export const getStaticPaths = (async () => {
+  const fichas = await getFichas('en');
+  return fichas.map((ficha) => ({ params: { slug: slugOf(ficha) }, props: { ficha } }));
+}) satisfies GetStaticPaths;
+
+interface Props { ficha: Ficha }
+const { ficha } = Astro.props;
+---
+
+<FichaPage lang="en" ficha={ficha} />

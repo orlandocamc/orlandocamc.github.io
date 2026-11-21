@@ -1,0 +1,19 @@
+{
+  "repo": "orlandocamc/plague-bot-vr",
+  "visibility": "private",
+  "generated": "2026-11-21",
+  "total_commits": 53,
+  "merge_commits_excluded": 0,
+  "bot_commits_excluded": 0,
+  "people": [
+    {
+      "name": "Orlando Camacho",
+      "is_orlando": true,
+      "commits": 53,
+      "commits_pct": 100.0,
+      "lines_pct": 100.0,
+      "first_commit": "2026-04-18",
+      "last_commit": "2026-11-21"
+    }
+  ]
+}

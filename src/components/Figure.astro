@@ -1,0 +1,31 @@
+---
+// Figure inside the dossier: one video slot or one/two images, with caption and credit.
+import VideoSlot from './VideoSlot.astro';
+import MotionToggle from './MotionToggle.astro';
+import { rich } from '../lib/text';
+import type { Lang } from '../i18n/ui';
+import type { Ficha } from '../lib/content';
+
+type FigureData = Ficha['data']['media']['figures'][number];
+interface Props { lang: Lang; figure: FigureData }
+const { lang, figure: f } = Astro.props;
+const caption = `${f.caption} — ${f.credit}`;
+---
+
+{f.video ? (
+  <figure class:list={['fig', { two: f.wide }]} data-motion-scope>
+    <div class="fig-media" style={`aspect-ratio: ${f.video.width} / ${f.video.height}`}>
+      <VideoSlot src={f.video.src} width={f.video.width} height={f.video.height} label={f.video.label} />
+    </div>
+    <figcaption><span set:html={rich(caption)} /><MotionToggle lang={lang} /></figcaption>
+  </figure>
+) : (
+  <figure class:list={['fig', { two: f.wide }]}>
+    <div class:list={[{ pair: (f.images?.length ?? 0) > 1 }]}>
+      {f.images?.map((img) => (
+        <img src={`/media/${img.src}`} width={img.width} height={img.height} alt={img.alt} loading="lazy" decoding="async" />
+      ))}
+    </div>
+    <figcaption><span set:html={rich(caption)} /></figcaption>
+  </figure>
+)}

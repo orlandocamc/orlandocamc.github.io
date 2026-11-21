@@ -1,0 +1,148 @@
+---
+// About: the one place where the full legal name appears, to link certificates and documents to the
+// brand. Education, positioning, roles and what he is looking for. Verified facts only.
+import '../../styles/ficha.css';
+import Base from '../../layouts/Base.astro';
+import Email from '../Email.astro';
+import { type Lang, url, useT } from '../../i18n/ui';
+import { site } from '../../data/site';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = useT(lang);
+const en = lang === 'en';
+
+const copy = en
+  ? {
+      lead: 'I build autonomous robots — and the mixed-reality link that lets people step in from anywhere.',
+      name: `My full name is ${site.fullName}; it is the name on my university records and certificates. I publish and work as ${site.name}.`,
+      positioning: [
+        'My work is about robots that navigate on their own, and the connection a person uses to take control from anywhere: autonomous navigation with ROS 2, SLAM and simulation, and teleoperation in virtual and mixed reality.',
+        'Leading teams is part of how I build: I captained JADA Robotics, the team behind Plague-Bot VR, and I co-founded the Semillero IBERO.',
+      ],
+      eduH: 'Education',
+      edu: [
+        ['Mechatronics Engineering', `${site.university.name} (${site.university.short})`],
+        ['Expected graduation', 'Fall 2029'],
+      ],
+      rolesH: 'Roles',
+      roles: [
+        ['Research assistant, mobile-robot autonomy', site.university.short],
+        ['Team captain & technical lead', 'JADA Robotics · Plague-Bot VR'],
+        ['Co-founder & Innovation Area Lead', 'Semillero IBERO'],
+      ],
+      lookingH: 'Looking for',
+      looking: 'Robotics internships and research stays in autonomous robotics, teleoperation and mixed reality, from August 2027. Mexico City · open to relocation.',
+      pubH: 'Name in publications',
+      pub: `${site.name}, as in the COMRob 2026 paper.`,
+      contactH: 'Contact',
+    }
+  : {
+      lead: 'Construyo robots autónomos — y la conexión en realidad mixta con la que una persona toma el control desde cualquier lugar.',
+      name: `Mi nombre completo es ${site.fullName}; es el nombre de mis documentos universitarios y constancias. Publico y trabajo como ${site.name}.`,
+      positioning: [
+        'Mi trabajo trata de robots que navegan por sí solos y de la conexión con la que una persona toma el control desde cualquier lugar: navegación autónoma con ROS 2, SLAM y simulación, y teleoperación en realidad virtual y mixta.',
+        'Dirigir equipos es parte de cómo construyo: fui capitán de JADA Robotics, el equipo de Plague-Bot VR, y cofundé el Semillero IBERO.',
+      ],
+      eduH: 'Formación',
+      edu: [
+        ['Ingeniería Mecatrónica', `${site.university.name} (${site.university.short})`],
+        ['Graduación esperada', 'Otoño de 2029'],
+      ],
+      rolesH: 'Cargos',
+      roles: [
+        ['Ayudante de investigación en autonomía de robots móviles', site.university.short],
+        ['Capitán y líder técnico', 'JADA Robotics · Plague-Bot VR'],
+        ['Cofundador y Líder del Área de Innovación', 'Semillero IBERO'],
+      ],
+      lookingH: 'Qué busco',
+      looking: 'Prácticas profesionales y estancias de investigación en robótica autónoma, teleoperación y realidad mixta, a partir de agosto de 2027. Ciudad de México · dispuesto a mudarme.',
+      pubH: 'Nombre en publicaciones',
+      pub: `${site.name}, como en el artículo de COMRob 2026.`,
+      contactH: 'Contacto',
+    };
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  mainEntity: {
+    '@type': 'Person',
+    name: site.name,
+    url: site.url,
+    alumniOf: { '@type': 'CollegeOrUniversity', name: site.university.name, alternateName: site.university.short },
+    sameAs: [site.linkedin, site.github],
+  },
+};
+---
+
+<Base lang={lang} title={`${t('about.title')} · ${site.name}`} description={t('about.description')} path="about/" tone="light" navOver="light" current="about" jsonLd={jsonLd} ogType="profile">
+  <div class="tone-light" data-tone="light">
+    <section class="head">
+      <div class="wrap">
+        <div class="head-top">
+          <a class="textlink" href={url(lang)}>← {site.name}</a>
+          <span>{t('about.title')}</span>
+        </div>
+        <h1 class="title">{site.name}</h1>
+        <div class="head-grid">
+          <p class="lead">{copy.lead}</p>
+          <p class="muted">{copy.name}</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="wrap">
+      <section class="doc reveal" aria-labelledby="a1">
+        <div class="doc-sec">
+          <header><span class="n">01</span><h2 id="a1" class="h3">{en ? 'Positioning' : 'Posicionamiento'}</h2></header>
+          <div class="doc-body prose">{copy.positioning.map((p) => <p>{p}</p>)}</div>
+        </div>
+      </section>
+
+      <section class="doc reveal" aria-labelledby="a2">
+        <div class="doc-sec">
+          <header><span class="n">02</span><h2 id="a2" class="h3">{copy.eduH}</h2></header>
+          <dl class="doc-body stack">{copy.edu.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+        </div>
+      </section>
+
+      <section class="doc reveal" aria-labelledby="a3">
+        <div class="doc-sec">
+          <header><span class="n">03</span><h2 id="a3" class="h3">{copy.rolesH}</h2></header>
+          <ul class="doc-body tbl">{copy.roles.map(([k, v]) => <li><h3 class="h3">{k}</h3><p class="muted">{v}</p></li>)}</ul>
+        </div>
+      </section>
+
+      <section class="doc reveal" aria-labelledby="a4">
+        <div class="doc-sec">
+          <header><span class="n">04</span><h2 id="a4" class="h3">{copy.lookingH}</h2></header>
+          <div class="doc-body prose"><p>{copy.looking}</p></div>
+        </div>
+      </section>
+
+      <section class="doc reveal" aria-labelledby="a5">
+        <div class="doc-sec">
+          <header><span class="n">05</span><h2 id="a5" class="h3">{copy.pubH}</h2></header>
+          <div class="doc-body"><p>{copy.pub}</p></div>
+        </div>
+      </section>
+
+      <section class="doc reveal" aria-labelledby="a6">
+        <div class="doc-sec">
+          <header><span class="n">06</span><h2 id="a6" class="h3">{copy.contactH}</h2></header>
+          <div class="doc-body about-links">
+            <a class="btn" href={site.linkedin}>LinkedIn <span class="arw" aria-hidden="true">→</span></a>
+            <a class="btn" href={site.github}>GitHub <span class="arw" aria-hidden="true">→</span></a>
+            <Email lang={lang} />
+          </div>
+        </div>
+      </section>
+      <div class="pager-space"></div>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .about-links { display: flex; flex-wrap: wrap; gap: var(--s-4); align-items: center; }
+  .pager-space { height: var(--section); }
+</style>

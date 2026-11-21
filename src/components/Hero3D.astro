@@ -1,0 +1,86 @@
+---
+// The real SLAM map (salon_v2) in 3D, behind the hero copy.
+// An island without a UI framework: the <hero-3d> custom element waits until the hero is visible and
+// the browser is idle, then imports three.js and hero3d.ts as a separate chunk (client:visible
+// semantics). Nothing loads with reduced motion or without WebGL: the still plan of the same map shows
+// instead. The poster and the name never wait for it.
+interface Props {
+  /** occupancy grid PNG in public/ (0 = occupied, 254 = free, 205 = unknown) */
+  map: string;
+  /** still plan shown with reduced motion, without WebGL, or if the 3D fails */
+  plan: { src: string; width: number; height: number };
+}
+const { map, plan } = Astro.props;
+---
+
+<hero-3d class="hero-3d" aria-hidden="true" data-map={map}><canvas></canvas></hero-3d>
+<div class="hero-stage" aria-hidden="true">
+  <img class="hero-plan" src={plan.src} width={plan.width} height={plan.height} alt="" loading="lazy" decoding="async" />
+</div>
+
+<style is:global>
+  hero-3d { display: block; }
+  .hero-3d { position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; transition: opacity 1.2s var(--ease-out); }
+  .hero-3d.on { opacity: 1; }
+  .hero-3d canvas { width: 100%; height: 100%; }
+  /* where the map sits: the right two thirds on wide screens, the upper band on narrow ones */
+  .hero-stage { position: absolute; left: 40%; right: var(--gutter); top: calc(var(--nav-h) + 40px); bottom: 104px; pointer-events: none; }
+  .hero-plan { display: none; width: 100%; height: 100%; object-fit: contain; opacity: .8; }
+  .rm .hero-plan, html:not(.will-3d) .hero-plan { display: block; }
+  @media (max-width: 900px) {
+    .hero-stage { left: var(--gutter); top: calc(var(--nav-h) + 8px); bottom: auto; height: 34%; }
+  }
+</style>
+
+<script>
+  import type { Hero3DControl } from '../scripts/hero3d';
+
+  class Hero3D extends HTMLElement {
+    private ctrl: Hero3DControl | null = null;
+    private paused = false;
+
+    connectedCallback() {
+      const d = document.documentElement;
+      if (!d.classList.contains('will-3d')) return;
+      const hero = this.closest<HTMLElement>('.hero');
+      const stage = hero?.querySelector<HTMLElement>('.hero-stage');
+      const canvas = this.querySelector('canvas');
+      if (!hero || !stage || !canvas) return;
+
+      hero.addEventListener('motiontoggle', (e) => {
+        this.paused = (e as CustomEvent<{ paused: boolean }>).detail.paused;
+        this.ctrl?.setPaused(this.paused);
+      });
+
+      const fail = () => { this.classList.remove('on'); d.classList.remove('will-3d'); };
+      const boot = async () => {
+        try {
+          const { createHero3D } = await import('../scripts/hero3d');
+          this.ctrl = await createHero3D({
+            canvas, hero, stage,
+            mapUrl: this.dataset.map ?? '',
+            signal: getComputedStyle(d).getPropertyValue('--signal').trim(),
+            onFirstFrame: () => this.classList.add('on'),
+            onFail: fail,
+          });
+          if (this.paused) this.ctrl.setPaused(true);
+        } catch {
+          fail();
+        }
+      };
+
+      // hydrate when visible, then when the browser is idle
+      const io = new IntersectionObserver((entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        const idle = window.requestIdleCallback ?? ((f: () => void) => window.setTimeout(f, 300));
+        const go = () => idle(() => void boot(), { timeout: 1500 });
+        if (document.readyState === 'complete') go();
+        else window.addEventListener('load', go, { once: true });
+      });
+      io.observe(hero);
+    }
+  }
+
+  if (!customElements.get('hero-3d')) customElements.define('hero-3d', Hero3D);
+</script>

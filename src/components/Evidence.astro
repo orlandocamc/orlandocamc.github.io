@@ -1,0 +1,37 @@
+---
+// One Authorship report (Reporte de autoría) as documentation: repository, Orlando's share of commits
+// and changed lines, first and last commit, other authors, and the method note.
+// Data: src/data/evidence/<report>.json (totals, percentages and dates only).
+import { getReport } from '../lib/evidence';
+import { rich } from '../lib/text';
+import { type Lang, useT } from '../i18n/ui';
+
+interface Props { lang: Lang; report: string; note?: string; headingId: string }
+const { lang, report, note, headingId } = Astro.props;
+const t = useT(lang);
+const r = getReport(report);
+const me = r.people.find((p) => p.is_orlando);
+const others = r.people.filter((p) => !p.is_orlando);
+const pct = (n: number) => `${Number.isInteger(n) ? n : n.toFixed(1)} %`;
+---
+
+<article aria-labelledby={headingId}>
+  <h3 id={headingId}>{t('ev.report')}</h3>
+  <p class="paper-title">{r.repo}</p>
+  <p class="meta">{r.visibility === 'public' ? t('ev.public') : t('ev.private')} · {t('ev.generated', { date: r.generated })}</p>
+  {me && (
+    <dl class="kv">
+      <div><dt>{t('ev.commits')}</dt><dd class="data">{t('ev.of', { a: me.commits, b: r.total_commits })} · {pct(me.commits_pct)}</dd></div>
+      <div><dt>{t('ev.lines')}</dt><dd class="data">{pct(me.lines_pct)}</dd></div>
+      <div><dt>{t('ev.dates')}</dt><dd class="data">{me.first_commit} → {me.last_commit}</dd></div>
+      {others.length > 0 && (
+        <div><dt>{t('ev.others')}</dt><dd class="data">{others.map((p) => `${p.name} · ${pct(p.commits_pct)}`).join('; ')}</dd></div>
+      )}
+    </dl>
+  )}
+  {note && <p class="note" set:html={rich(note)} />}
+  <p class="note">{t('ev.method')}</p>
+  {r.visibility === 'public'
+    ? <a class="lnk textlink" href={`https://github.com/${r.repo}`}>github.com/{r.repo}</a>
+    : <span class="lnk tbc">{t('ev.full')}</span>}
+</article>
