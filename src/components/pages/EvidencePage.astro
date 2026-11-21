@@ -1,0 +1,91 @@
+---
+// Full Authorship report (Reporte de autoría) of one repository, at /evidence/<slug>/.
+// Data: src/data/evidence/<slug>.json (totals, percentages, dates, folders and people; never emails,
+// and no counts about tooling). Organization repositories show only Orlando's totals and percentages.
+import '../../styles/ficha.css';
+import Base from '../../layouts/Base.astro';
+import { type Lang, url, useT } from '../../i18n/ui';
+import { getReport } from '../../lib/evidence';
+import { getFichas, slugOf } from '../../lib/content';
+import { site } from '../../data/site';
+
+interface Props { lang: Lang; slug: string }
+const { lang, slug } = Astro.props;
+const t = useT(lang);
+const r = getReport(slug);
+const fichas = await getFichas(lang);
+const owner = fichas.find((f) => f.data.evidence.some((e) => e.report === slug));
+const num = (n: number) => n.toLocaleString(lang === 'es' ? 'es-MX' : 'en-US');
+const pct = (n: number) => `${Number.isInteger(n) ? n : n.toFixed(1)} %`;
+const name = r.repo.split('/')[1];
+---
+
+<Base
+  lang={lang}
+  title={`${t('ev.page.title')} · ${name} · ${site.name}`}
+  description={t('ev.page.description', { repo: r.repo })}
+  path={`evidence/${slug}/`}
+  tone="light"
+  navOver="light"
+  current="work"
+>
+  <article aria-labelledby="ev-h">
+    <section class="head tone-light" data-tone="light">
+      <div class="wrap">
+        <div class="head-top">
+          {owner
+            ? <a class="textlink" href={url(lang, `projects/${slugOf(owner)}/`)}>← {t('ev.page.back')}</a>
+            : <a class="textlink" href={`${url(lang)}#work`}>← {t('ficha.back')}</a>}
+          <span>{t('ev.page.generatedOn')} {r.generated}</span>
+        </div>
+        <h1 id="ev-h" class="title">{t('ev.page.title')}</h1>
+        <div class="head-grid">
+          <p class="lead">{r.repo} · {r.visibility === 'public' ? t('ev.public') : t('ev.private')}</p>
+          <dl class="spec">
+            <div><dt>{t('ev.page.total')}</dt><dd class="data">{num(r.total_commits)}</dd></div>
+            <div><dt>{t('ev.page.lines')}</dt><dd class="data">{num(r.total_changed_lines)}</dd></div>
+            <div><dt>{t('ev.page.generatedOn')}</dt><dd class="data">{r.generated}</dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <div class="tone-light" data-tone="light">
+      <div class="wrap">
+        <section class="doc" aria-labelledby="e-people">
+          <div class="doc-sec">
+            <header><span class="n">01</span><h2 id="e-people" class="h3">{t('ev.page.people')}</h2></header>
+            <div class="doc-body docs">
+              {r.people.map((p, i) => (
+                <article aria-labelledby={`p-${i}`}>
+                  <h3 id={`p-${i}`}>{p.name}</h3>
+                  <dl class="kv">
+                    <div><dt>{t('ev.page.commitsBy', { name: p.name })}</dt><dd class="data">{t('ev.of', { a: p.commits, b: r.total_commits })} · {pct(p.commits_pct)}</dd></div>
+                    <div><dt>{t('ev.lines')}</dt><dd class="data">{pct(p.lines_pct)}</dd></div>
+                    <div><dt>{t('ev.dates')}</dt><dd class="data">{p.first_commit} → {p.last_commit}</dd></div>
+                    {p.folders && p.folders.length > 0 && (
+                      <div><dt>{t('ev.page.folders')}</dt><dd class="data">{p.folders.map((f) => `${f.folder} · ${f.commits}`).join('; ')}</dd></div>
+                    )}
+                  </dl>
+                </article>
+              ))}
+              {r.orlando_only && <p class="note">{t('ev.page.orgOnly')}</p>}
+              <p class="note">{t('ev.page.excluded', { m: r.merge_commits_excluded, b: r.bot_commits_excluded })}</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="doc" aria-labelledby="e-method">
+          <div class="doc-sec">
+            <header><span class="n">02</span><h2 id="e-method" class="h3">{t('ev.page.method')}</h2></header>
+            <div class="doc-body">
+              <p class="note" style="margin-top:0">{t('ev.method')}</p>
+              {r.visibility === 'public' && <p class="docs"><a class="lnk textlink" href={`https://github.com/${r.repo}`}>github.com/{r.repo}</a></p>}
+            </div>
+          </div>
+        </section>
+        <div style="height: var(--section)"></div>
+      </div>
+    </div>
+  </article>
+</Base>

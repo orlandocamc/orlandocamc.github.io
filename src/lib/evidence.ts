@@ -8,6 +8,8 @@ export interface Person {
   lines_pct: number;
   first_commit: string;
   last_commit: string;
+  /** top-level folders by commits (absent for organisation repositories) */
+  folders?: { folder: string; commits: number }[];
 }
 export interface Report {
   repo: string;
@@ -16,6 +18,9 @@ export interface Report {
   total_commits: number;
   merge_commits_excluded: number;
   bot_commits_excluded: number;
+  total_changed_lines: number;
+  /** organisation repository: only Orlando's totals are shown, no folder names */
+  orlando_only: boolean;
   people: Person[];
 }
 
@@ -26,3 +31,6 @@ export function getReport(id: string): Report {
   if (!r) throw new Error(`Authorship report not found: src/data/evidence/${id}.json`);
   return r;
 }
+
+/** Ids (= slugs of /evidence/<slug>/) of every report. */
+export const reportIds = Object.keys(files).map((p) => p.replace('../data/evidence/', '').replace('.json', ''));

@@ -3,7 +3,6 @@
 // brand. Education, positioning, roles and what he is looking for. Verified facts only.
 import '../../styles/ficha.css';
 import Base from '../../layouts/Base.astro';
-import Email from '../Email.astro';
 import { type Lang, url, useT } from '../../i18n/ui';
 import { site } from '../../data/site';
 
@@ -133,7 +132,6 @@ const jsonLd = {
           <div class="doc-body about-links">
             <a class="btn" href={site.linkedin}>LinkedIn <span class="arw" aria-hidden="true">→</span></a>
             <a class="btn" href={site.github}>GitHub <span class="arw" aria-hidden="true">→</span></a>
-            <Email lang={lang} />
           </div>
         </div>
       </section>

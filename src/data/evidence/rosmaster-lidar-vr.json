@@ -5,6 +5,8 @@
   "total_commits": 3,
   "merge_commits_excluded": 0,
   "bot_commits_excluded": 0,
+  "total_changed_lines": 10389,
+  "orlando_only": false,
   "people": [
     {
       "name": "Orlando Camacho",
@@ -13,7 +15,25 @@
       "commits_pct": 100.0,
       "lines_pct": 100.0,
       "first_commit": "2026-11-21",
-      "last_commit": "2026-11-21"
+      "last_commit": "2026-11-21",
+      "folders": [
+        {
+          "folder": "(root)",
+          "commits": 2
+        },
+        {
+          "folder": "Assets",
+          "commits": 1
+        },
+        {
+          "folder": "Packages",
+          "commits": 1
+        },
+        {
+          "folder": "ProjectSettings",
+          "commits": 1
+        }
+      ]
     }
   ]
 }

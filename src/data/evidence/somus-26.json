@@ -1,0 +1,40 @@
+{
+  "repo": "orlandocamc/SOMUS-26",
+  "visibility": "public",
+  "generated": "2026-11-21",
+  "total_commits": 8,
+  "merge_commits_excluded": 0,
+  "bot_commits_excluded": 0,
+  "total_changed_lines": 11278,
+  "orlando_only": false,
+  "people": [
+    {
+      "name": "Orlando Camacho",
+      "is_orlando": true,
+      "commits": 6,
+      "commits_pct": 75.0,
+      "lines_pct": 62.3,
+      "first_commit": "2026-04-29",
+      "last_commit": "2026-04-29",
+      "folders": [
+        {
+          "folder": "(root)",
+          "commits": 4
+        },
+        {
+          "folder": "assets",
+          "commits": 4
+        }
+      ]
+    },
+    {
+      "name": "Víctor Alejandro Palacios Castillo",
+      "is_orlando": false,
+      "commits": 2,
+      "commits_pct": 25.0,
+      "lines_pct": 37.7,
+      "first_commit": "2026-04-19",
+      "last_commit": "2026-04-19"
+    }
+  ]
+}

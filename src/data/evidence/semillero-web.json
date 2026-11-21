@@ -1,0 +1,21 @@
+{
+  "repo": "semillero-ing/semillero-web",
+  "visibility": "private",
+  "generated": "2026-11-21",
+  "total_commits": 73,
+  "merge_commits_excluded": 5,
+  "bot_commits_excluded": 16,
+  "total_changed_lines": 96093,
+  "orlando_only": true,
+  "people": [
+    {
+      "name": "Orlando Camacho",
+      "is_orlando": true,
+      "commits": 73,
+      "commits_pct": 100.0,
+      "lines_pct": 100.0,
+      "first_commit": "2026-10-25",
+      "last_commit": "2026-11-15"
+    }
+  ]
+}

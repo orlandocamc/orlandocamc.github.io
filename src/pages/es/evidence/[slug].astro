@@ -1,0 +1,12 @@
+---
+import type { GetStaticPaths } from 'astro';
+import EvidencePage from '../../../components/pages/EvidencePage.astro';
+import { reportIds } from '../../../lib/evidence';
+
+export const getStaticPaths = (() => reportIds.map((slug) => ({ params: { slug }, props: { slug } }))) satisfies GetStaticPaths;
+
+interface Props { slug: string }
+const { slug } = Astro.props;
+---
+
+<EvidencePage lang="es" slug={slug} />

@@ -1,7 +1,8 @@
 // Content collections. One Markdown file per Ficha and per Entrada breve, per language:
 //   src/content/fichas/{en,es}/<slug>.md
 //   src/content/entradas/{en,es}/<slug>.md
-// Rule: only verified facts (Confirmed or No objection). Anything missing stays as a visible "[to confirm]".
+// Rule: only verified facts (Confirmed or No objection). Optional fields are tolerant: when one is missing, its
+// block or row is simply not rendered (no empty label, no placeholder).
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
@@ -35,7 +36,7 @@ const chapter = z.object({
   title: z.string(),
   body: z.string(),
   caption: z.string(),
-  credit: z.string(),
+  credit: z.string().optional(),
   /** show the recording as a map: greyscale, inverted, emerald hue (navigation costmap) */
   costmap: z.boolean().default(false),
   /** alternate graphite step, for rhythm */
@@ -119,12 +120,8 @@ const fichas = defineCollection({
       .default({ chapters: [], figures: [] }),
     evidence: z
       .array(
-        z.union([
-          /** an Authorship report in src/data/evidence/<report>.json */
-          z.object({ report: z.string(), note: z.string().optional() }),
-          /** evidence that exists but is not ready to publish */
-          z.object({ pending: z.string() }),
-        ]),
+        /** an Authorship report in src/data/evidence/<report>.json, shown in full at /evidence/<report>/ */
+        z.object({ report: z.string(), note: z.string().optional() }),
       )
       .default([]),
     /** big image chapter on the home page (Plague-Bot) */
@@ -142,6 +139,8 @@ const entradas = defineCollection({
     year: z.string().optional(),
     stack: z.string().optional(),
     links: z.array(z.object({ label: z.string(), url: z.url() })).default([]),
+    /** id of an Authorship report in src/data/evidence/: adds a link to /evidence/<id>/ */
+    report: z.string().optional(),
     order: z.number().int(),
   }),
 });

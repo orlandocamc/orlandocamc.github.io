@@ -27,16 +27,26 @@ built:
     detail: Agosto de 2026, con Mario Ureña, Moisés López, Martín Santoyo y Joel Arango.
   - title: Líder del Área de Innovación
   - title: El sitio web del Semillero
-    detail: "[URL — to confirm]"
+    detail: Sitio web en construcción.
 stack:
   - { label: Departamento, value: Ingenierías · IBERO Ciudad de México }
-  - { label: Sitio web, value: "[URL — to confirm]" }
+  - { label: Sitio web, value: Sitio web en construcción }
 evidence:
-  - pending: "[reporte de autoría del sitio web — to confirm]"
+  - report: semillero-web
+    note: Repositorio del sitio web del Semillero, que pertenece a la organización de GitHub del Semillero.
+media:
+  chapters:
+    - id: reel
+      after: head
+      layout: split
+      title: "Un programa hecho por estudiantes"
+      body: "Programa estudiantil de talento e innovación del Departamento de Ingenierías de la IBERO Ciudad de México, con siete equipos que se preparan para distintas competencias."
+      caption: "Semillero IBERO — gráfico animado"
+      video: { src: chapter-semillero-reel, width: 720, height: 1280, label: "Gráfico animado del Semillero IBERO: el logotipo y tres figuras ilustradas de estudiantes, con la frase «un programa hecho por»." }
 ---
 
 <!-- ES: revisar con Orlando -->
 
-El Semillero tiene siete equipos que se preparan para distintas competencias; sus detalles están en el sitio web del propio Semillero. [URL — to confirm]
+El Semillero tiene siete equipos que se preparan para distintas competencias; sus detalles se enlazarán desde el sitio web del propio Semillero, que todavía está en construcción.
 
 Lo cofundé y dirijo su Área de Innovación. También construí su sitio web.

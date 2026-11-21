@@ -15,7 +15,7 @@ interface Props {
 }
 const { lang, chapter: c, morph = false } = Astro.props;
 const hid = `ch-${c.id}`;
-const caption = c.caption.includes(c.credit) ? c.caption : `${c.caption} — ${c.credit}`;
+const caption = !c.credit || c.caption.includes(c.credit) ? c.caption : `${c.caption} — ${c.credit}`;
 ---
 
 {c.layout === 'full' ? (

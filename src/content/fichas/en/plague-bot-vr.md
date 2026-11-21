@@ -26,7 +26,6 @@ recognitions:
     note: Presented by Orlando Camacho, Adán López and Eliot Calderón.
   - title: Global Award Winner
     event: Intel AI Global Impact Festival 2026
-    note: "[announcement — link to confirm]"
 publication:
   title: Edge-AI and 6-DOF Robotic Manipulator for Greenhouse Crop Monitoring
   venue: COMRob 2026
@@ -62,7 +61,7 @@ built:
   - title: VR HUD
     data: Unity · Meta Quest 3
   - title: Robot chassis
-    detail: "The mobile base. [details — to confirm]"
+    detail: The mobile base.
   - title: System integration
     detail: Brought nearly all subsystems together into the working robot.
   - title: Arm simulation and motion planning
@@ -97,7 +96,7 @@ media:
       costmap: true
       title: It finds its own way
       body: Nav2 plans a path along the greenhouse rows on a SLAM map and inflates a safety margin around the plants. The robot follows the path on its own.
-      caption: "Autonomous navigation — Nav2 costmap in the greenhouse map, shown inverted, in emerald [simulation recording — date to confirm]"
+      caption: "Autonomous navigation — Nav2 costmap in the greenhouse map, shown inverted, in emerald"
       credit: Orlando Camacho
       video: { src: chapter-nav-costmap, width: 630, height: 464, label: "Top view of the Nav2 costmap of the greenhouse rows: the robot follows its planned path along a row." }
     - id: proton
@@ -127,6 +126,7 @@ media:
       video: { src: fig-pest-detection, width: 640, height: 480, label: "Tomato plants in a greenhouse with the detector’s labelled boxes around ripe, unripe and diseased fruit." }
 evidence:
   - report: plague-bot-vr
+  - report: plague-bot-vr-hud
 ---
 
 Plague-Bot VR navigates a greenhouse on its own, detects pests with AI, carries a 6-DOF arm, and lets a remote operator take over through a VR headset.

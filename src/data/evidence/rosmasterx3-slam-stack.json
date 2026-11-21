@@ -5,6 +5,8 @@
   "total_commits": 6,
   "merge_commits_excluded": 2,
   "bot_commits_excluded": 0,
+  "total_changed_lines": 7147,
+  "orlando_only": false,
   "people": [
     {
       "name": "Orlando Camacho",
@@ -13,7 +15,29 @@
       "commits_pct": 100.0,
       "lines_pct": 100.0,
       "first_commit": "2026-04-28",
-      "last_commit": "2026-11-21"
+      "last_commit": "2026-11-21",
+      "folders": [
+        {
+          "folder": "(root)",
+          "commits": 6
+        },
+        {
+          "folder": "src",
+          "commits": 2
+        },
+        {
+          "folder": "scripts",
+          "commits": 2
+        },
+        {
+          "folder": "clients",
+          "commits": 1
+        },
+        {
+          "folder": "config",
+          "commits": 1
+        }
+      ]
     }
   ]
 }

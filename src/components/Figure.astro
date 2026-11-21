@@ -9,7 +9,7 @@ import type { Ficha } from '../lib/content';
 type FigureData = Ficha['data']['media']['figures'][number];
 interface Props { lang: Lang; figure: FigureData }
 const { lang, figure: f } = Astro.props;
-const caption = `${f.caption} — ${f.credit}`;
+const caption = f.credit ? `${f.caption} — ${f.credit}` : f.caption;
 ---
 
 {f.video ? (
@@ -23,7 +23,7 @@ const caption = `${f.caption} — ${f.credit}`;
   <figure class:list={['fig', { two: f.wide }]}>
     <div class:list={[{ pair: (f.images?.length ?? 0) > 1 }]}>
       {f.images?.map((img) => (
-        <img src={`/media/${img.src}`} width={img.width} height={img.height} alt={img.alt} loading="lazy" decoding="async" />
+        <img src={`/media/${img.src}`} width={img.width} height={img.height} alt={img.alt} style={`aspect-ratio: ${img.width} / ${img.height}`} loading="lazy" decoding="async" />
       ))}
     </div>
     <figcaption><span set:html={rich(caption)} /></figcaption>

@@ -26,14 +26,24 @@ built:
     detail: August 2026, with Mario Ureña, Moisés López, Martín Santoyo and Joel Arango.
   - title: Innovation Area Lead
   - title: The Semillero’s website
-    detail: "[URL — to confirm]"
+    detail: Website in progress.
 stack:
   - { label: Department, value: Engineering · IBERO Mexico City }
-  - { label: Website, value: "[URL — to confirm]" }
+  - { label: Website, value: Website in progress }
 evidence:
-  - pending: "[website authorship report — to confirm]"
+  - report: semillero-web
+    note: Repository of the Semillero’s website, which belongs to the Semillero’s GitHub organization.
+media:
+  chapters:
+    - id: reel
+      after: head
+      layout: split
+      title: "A program made by students"
+      body: "Student talent and innovation program of the Department of Engineering at IBERO Mexico City, with seven teams preparing for different competitions."
+      caption: "Semillero IBERO — motion graphic"
+      video: { src: chapter-semillero-reel, width: 720, height: 1280, label: "Semillero IBERO motion graphic: the logo and three illustrated student figures, with the line “un programa hecho por”." }
 ---
 
-The Semillero has seven teams preparing for different competitions; their details live on the Semillero’s own website. [URL — to confirm]
+The Semillero has seven teams preparing for different competitions; their details will be linked from the Semillero’s own website, which is still in progress.
 
 I co-founded it and lead its Innovation Area. I also built its website.

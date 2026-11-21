@@ -26,12 +26,12 @@ src/
   content/fichas/{en,es}/<slug>.md     one Ficha (project file) per language
   content/entradas/{en,es}/<slug>.md   Entradas breves (short entries) and research lines
   content.config.ts                    zod schema of both collections
-  data/site.ts                         name, links, email (empty until confirmed)
+  data/site.ts                         name and links (contact is LinkedIn and GitHub only; no email is published)
   data/evidence/*.json                 Authorship reports, trimmed to totals, percentages and dates
   i18n/ui.ts                           interface strings in both languages
   styles/tokens.css                    ALL design tokens: typefaces, colours, type scale, space, motion
   styles/global.css · home.css · ficha.css
-  components/                          Nav, VideoSlot, Hero3D, Evidence, Credits, ResultFigure, Chapter, Figure, Email…
+  components/                          Nav, VideoSlot, Hero3D, Evidence, Credits, ResultFigure, Chapter, Figure…
   components/pages/                    Home, FichaPage, About, NotFound (shared by both languages)
   pages/ and pages/es/                 thin routes: /, /about/, /projects/[slug]/, 404
   scripts/site.ts                      nav tone, scroll-spy, reading progress, deferred video, reveals
@@ -45,8 +45,8 @@ docs/DECISIONES.md                     technical decisions
 
 ## Content rules
 
-- Only verified facts go on the site. Anything missing is written as a visible `[… to confirm]`; the
-  components style it as a pending marker (`.tbc`) automatically.
+- Only verified facts go on the site. Anything that cannot be verified is left out: optional fields are
+  tolerant, so a missing field means its block or row is not rendered (no placeholder is ever shown).
 - Spanish copy carries a review marker for Orlando (`# ES: revisar con Orlando` in the front matter,
   `<!-- ES: revisar con Orlando -->` in the body and in every `/es/` page).
 - Every team member is credited by name with what they did. Orlando's own work is the "What I built" list.
@@ -64,11 +64,12 @@ docs/DECISIONES.md                     technical decisions
 4. Media: put `<name>.mp4`, `<name>.webm` and `<name>-poster.webp` in `public/media/` and reference
    `<name>` in `media.chapters` (dark video chapters, placed with `after:`) or `media.figures`. Each
    needs a `label` that describes what the clip shows, a caption and a credit. Loops: 6–12 s, no audio,
-   under 4 MB. Without chapters the Ficha shows a `[video — to confirm]` band.
+   under 4 MB. Without chapters the Ficha simply has no video chapter.
 5. Evidence: add an Authorship report as `src/data/evidence/<id>.json` (only `repo`, `visibility`,
    `generated`, totals, and per person `name`, `is_orlando`, `commits`, `commits_pct`, `lines_pct`,
    `first_commit`, `last_commit`; never emails) and list `- report: <id>` under `evidence`.
-   Use `- pending: "[… — to confirm]"` for evidence that is not ready.
+   Each report is also published in full at `/evidence/<id>/` (and `/es/evidence/<id>/`); the Ficha links there.
+   Omit `evidence` when there is none and the section disappears.
 6. The body of the Markdown file is the Overview: first paragraph is the lead, the rest is detail.
 
 The page is generated at `/projects/<slug>/` and `/es/projects/<slug>/`, and added to the sitemap.

@@ -5,6 +5,8 @@
   "total_commits": 53,
   "merge_commits_excluded": 0,
   "bot_commits_excluded": 0,
+  "total_changed_lines": 1811849,
+  "orlando_only": false,
   "people": [
     {
       "name": "Orlando Camacho",
@@ -13,7 +15,29 @@
       "commits_pct": 100.0,
       "lines_pct": 100.0,
       "first_commit": "2026-04-18",
-      "last_commit": "2026-11-21"
+      "last_commit": "2026-11-21",
+      "folders": [
+        {
+          "folder": "(root)",
+          "commits": 28
+        },
+        {
+          "folder": "src",
+          "commits": 26
+        },
+        {
+          "folder": "comrob_eval",
+          "commits": 7
+        },
+        {
+          "folder": "docs",
+          "commits": 5
+        },
+        {
+          "folder": "firmware",
+          "commits": 2
+        }
+      ]
     }
   ]
 }

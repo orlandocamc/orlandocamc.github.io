@@ -34,14 +34,16 @@ validado por zod; no hizo falta poner componentes dentro del contenido.
   en `src/content.config.ts`. Términos de `CONTEXT.md`: Ficha, Entrada breve, Aporte («What I built»),
   Evidencia, Reconocimiento, Reporte de autoría.
 - Fuente única: `docs/hechos.md` del espacio de trabajo del perfil. Solo «Confirmado» o «Sin objeción».
-  Lo que falta se escribe `[… to confirm]` y los componentes lo marcan con `.tbc`.
+  Lo que no se puede verificar no se muestra: los campos opcionales son tolerantes y, si faltan, el bloque
+  o la fila no se renderiza (sin marcadores ni etiquetas vacías).
 - La sección Results solo aparece si hay cifras medidas (ROSMASTER y los clientes de RM no tienen).
 - La línea de investigación multirrobot es una entrada `kind: research`, sin nombres ni detalles.
-- Evidencia de Semillero: el reporte del repo `semillero-web` no se publica todavía. Que Orlando haga
-  todos los commits humanos figura «Por confirmar» en `hechos.md`, y el repo es de la organización.
-  Queda `[… to confirm]`.
-- Reportes de autoría: copia recortada en `src/data/evidence/` (totales, porcentajes, fechas, nombres; sin
-  correos ni rutas). Los de `rosmaster-lidar-vr` y `rosmaster-camara3d-vr` llevan una nota: sus fechas
+- Evidencia de Semillero: el repo `semillero-web` es de la organización, así que su reporte muestra solo los
+  totales y porcentajes de Orlando, sin nombres de carpetas internas ni de otras personas.
+- Reportes de autoría: copia recortada en `src/data/evidence/` (totales, porcentajes, fechas, carpetas y
+  nombres; sin correos). Cada reporte se publica completo en `/evidence/<id>/` y `/es/evidence/<id>/`. Los JSON
+  se regeneraron a partir de `evidencia/` con una lista blanca de campos; los conteos de trailers o menciones
+  a herramientas nunca se copian. Los de `rosmaster-lidar-vr` y `rosmaster-camara3d-vr` llevan una nota: sus fechas
   son las de creación del repo, no las del trabajo.
 
 ## Diseño
@@ -95,9 +97,8 @@ Elegí `@view-transition { navigation: auto; }` (cross-document) en lugar de `<C
   custom element `<hero-3d>` reproduce `client:visible`: espera a que el hero sea visible y a que el
   navegador esté ocioso, y entonces importa three.js y `hero3d.ts` como chunk aparte. No carga sin WebGL
   ni con movimiento reducido: se ve el plano fijo del mismo mapa.
-- `Evidence`, `Credits`, `ResultFigure`, `Chapter`, `Figure`, `Nav` (vidrio solo sobre video), `Email`.
-- `Email`: mientras `site.email` esté vacío muestra `[email — to confirm]`. Con dirección, la guarda
-  invertida y partida en atributos `data-` y la arma al hacer clic: nunca aparece en el HTML.
+- `Evidence`, `Credits`, `ResultFigure`, `Chapter`, `Figure`, `Nav` (vidrio solo sobre video).
+- Contacto: solo LinkedIn y GitHub. Orlando decidió no publicar correo; no hay componente de correo.
 
 ## SEO
 

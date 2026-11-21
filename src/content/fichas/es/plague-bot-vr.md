@@ -27,7 +27,6 @@ recognitions:
     note: Lo presentaron Orlando Camacho, Adán López y Eliot Calderón.
   - title: Global Award Winner
     event: Intel AI Global Impact Festival 2026
-    note: "[anuncio — link to confirm]"
 publication:
   title: Edge-AI and 6-DOF Robotic Manipulator for Greenhouse Crop Monitoring
   venue: COMRob 2026
@@ -63,7 +62,7 @@ built:
   - title: HUD de realidad virtual
     data: Unity · Meta Quest 3
   - title: Chasis del robot
-    detail: "La base móvil. [detalles — to confirm]"
+    detail: La base móvil.
   - title: Integración del sistema
     detail: Integré casi todos los subsistemas en el robot funcional.
   - title: Simulación y planeación de movimiento del brazo
@@ -98,7 +97,7 @@ media:
       costmap: true
       title: Encuentra su camino
       body: Nav2 planea una ruta por los pasillos del invernadero sobre un mapa SLAM e infla un margen de seguridad alrededor de las plantas. El robot sigue la ruta por sí solo.
-      caption: "Navegación autónoma — costmap de Nav2 en el mapa del invernadero, invertido y en esmeralda [grabación de simulación — fecha to confirm]"
+      caption: "Navegación autónoma — costmap de Nav2 en el mapa del invernadero, invertido y en esmeralda"
       credit: Orlando Camacho
       video: { src: chapter-nav-costmap, width: 630, height: 464, label: "Vista superior del costmap de Nav2 de los pasillos del invernadero: el robot sigue la ruta planeada a lo largo de un pasillo." }
     - id: proton
@@ -128,6 +127,7 @@ media:
       video: { src: fig-pest-detection, width: 640, height: 480, label: "Plantas de tomate en un invernadero con los recuadros etiquetados del detector alrededor de frutos maduros, verdes y enfermos." }
 evidence:
   - report: plague-bot-vr
+  - report: plague-bot-vr-hud
 ---
 
 <!-- ES: revisar con Orlando -->

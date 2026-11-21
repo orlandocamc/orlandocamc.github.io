@@ -4,7 +4,7 @@
 // Data: src/data/evidence/<report>.json (totals, percentages and dates only).
 import { getReport } from '../lib/evidence';
 import { rich } from '../lib/text';
-import { type Lang, useT } from '../i18n/ui';
+import { type Lang, url, useT } from '../i18n/ui';
 
 interface Props { lang: Lang; report: string; note?: string; headingId: string }
 const { lang, report, note, headingId } = Astro.props;
@@ -31,7 +31,6 @@ const pct = (n: number) => `${Number.isInteger(n) ? n : n.toFixed(1)} %`;
   )}
   {note && <p class="note" set:html={rich(note)} />}
   <p class="note">{t('ev.method')}</p>
-  {r.visibility === 'public'
-    ? <a class="lnk textlink" href={`https://github.com/${r.repo}`}>github.com/{r.repo}</a>
-    : <span class="lnk tbc">{t('ev.full')}</span>}
+  <a class="lnk textlink" href={url(lang, `evidence/${report}/`)}>{t('ev.full')} →</a>
+  {r.visibility === 'public' && <a class="lnk textlink" href={`https://github.com/${r.repo}`}>github.com/{r.repo}</a>}
 </article>

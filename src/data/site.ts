@@ -11,9 +11,4 @@ export const site = {
     short: 'IBERO',
     url: 'https://ibero.mx',
   },
-  /**
-   * Email: [to confirm]. Leave both parts empty until Orlando confirms the address.
-   * When set, <Email /> renders it obfuscated (never as plain text in the HTML).
-   */
-  email: { user: '', domain: '' },
-} as const;
+};

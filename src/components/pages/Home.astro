@@ -6,7 +6,6 @@ import Base from '../../layouts/Base.astro';
 import VideoSlot from '../VideoSlot.astro';
 import Hero3D from '../Hero3D.astro';
 import MotionToggle from '../MotionToggle.astro';
-import Email from '../Email.astro';
 import { type Lang, url, useT } from '../../i18n/ui';
 import { getEntradas, getFichas, slugOf } from '../../lib/content';
 import { pad2, rich, titleHtml } from '../../lib/text';
@@ -170,11 +169,10 @@ const jsonLd = {
               <th scope="row" class="entry-name">{e.data.title}</th>
               <td>{e.data.type}</td>
               <td class="muted"><span set:html={rich(e.data.summary)} />{e.data.stack && <span class="stk data">{e.data.stack}</span>}</td>
-              <td class="muted" set:html={rich(e.data.year ?? '[to confirm]')} />
+              <td class="muted">{e.data.year ?? '—'}</td>
               <td class="lk">
-                {e.data.links.length
-                  ? e.data.links.map((l) => <a class="textlink" href={l.url}>{l.label}</a>)
-                  : <span class="tbc">[link — to confirm]</span>}
+                {e.data.links.map((l) => <a class="textlink" href={l.url}>{l.label}</a>)}
+                {e.data.report && <a class="textlink" href={url(lang, `evidence/${e.data.report}/`)}>{t('ev.page.title')}</a>}
               </td>
             </tr>
           ))}
@@ -194,7 +192,6 @@ const jsonLd = {
         <div class="contact-links">
           <a class="btn" href={site.linkedin}>LinkedIn <span class="arw" aria-hidden="true">→</span></a>
           <a class="btn" href={site.github}>GitHub <span class="arw" aria-hidden="true">→</span></a>
-          <Email lang={lang} />
         </div>
       </div>
     </div>

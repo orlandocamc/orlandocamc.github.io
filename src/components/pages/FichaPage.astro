@@ -11,7 +11,7 @@ import Evidence from '../Evidence.astro';
 import ResultFigure from '../ResultFigure.astro';
 import { type Lang, url, useT } from '../../i18n/ui';
 import { type Ficha, getFichas, slugOf } from '../../lib/content';
-import { pad2, rich, titleHtml, TBC } from '../../lib/text';
+import { pad2, rich, titleHtml } from '../../lib/text';
 import { site } from '../../data/site';
 
 interface Props { lang: Lang; ficha: Ficha }
@@ -23,11 +23,18 @@ const all = await getFichas(lang);
 const index = all.findIndex((f) => f.id === ficha.id);
 const next = all[(index + 1) % all.length];
 
-// Overview: the Markdown body, with "[… to confirm]" markers styled as pending facts.
-const overviewHtml = (ficha.rendered?.html ?? '').replace(TBC, (m) => `<span class="tbc">${m}</span>`);
+const overviewHtml = ficha.rendered?.html ?? '';
 
 type SectionId = 'overview' | 'results' | 'built' | 'credits' | 'evidence' | 'stack';
-const sections: SectionId[] = ['overview', ...(d.results.length ? (['results'] as const) : []), 'built', 'credits', 'evidence', 'stack'];
+const hasEvidence = d.evidence.length > 0 || Boolean(d.publication) || d.recognitions.length > 0;
+const sections: SectionId[] = [
+  'overview',
+  ...(d.results.length ? (['results'] as const) : []),
+  'built',
+  'credits',
+  ...(hasEvidence ? (['evidence'] as const) : []),
+  ...(d.stack.length ? (['stack'] as const) : []),
+];
 const number = (s: SectionId) => pad2(sections.indexOf(s) + 1);
 const titles: Record<SectionId, string> = {
   overview: t('ficha.overview'), results: t('ficha.results'), built: t('ficha.built'),
@@ -36,7 +43,7 @@ const titles: Record<SectionId, string> = {
 
 // Interleave chapters with the dossier: consecutive sections share one light block.
 type Chap = (typeof d.media.chapters)[number];
-type Group = { kind: 'chapter'; c: Chap; first: boolean } | { kind: 'doc'; ids: SectionId[] } | { kind: 'empty' };
+type Group = { kind: 'chapter'; c: Chap; first: boolean } | { kind: 'doc'; ids: SectionId[] };
 const groups: Group[] = [];
 const chaptersAfter = (k: Chap['after']) => d.media.chapters.filter((c) => c.after === k);
 let firstChapter = true;
@@ -44,7 +51,6 @@ const pushChapters = (k: Chap['after']) => {
   for (const c of chaptersAfter(k)) { groups.push({ kind: 'chapter', c, first: firstChapter }); firstChapter = false; }
 };
 pushChapters('head');
-if (d.media.chapters.length === 0) groups.push({ kind: 'empty' });
 for (const s of sections) {
   const lastGroup = groups[groups.length - 1];
   if (lastGroup && lastGroup.kind === 'doc') lastGroup.ids.push(s);
@@ -72,7 +78,7 @@ const jsonLd = {
 <Base
   lang={lang}
   title={`${d.title} — ${lang === 'es' ? 'Ficha' : 'Project file'} · ${site.name}`}
-  description={d.summary.replace(TBC, '').trim()}
+  description={d.summary}
   path={`projects/${slug}/`}
   tone="light"
   navOver="light"
@@ -115,11 +121,6 @@ const jsonLd = {
 
     {groups.map((g) => {
       if (g.kind === 'chapter') return <Chapter lang={lang} chapter={g.c} morph={g.first && d.featured} />;
-      if (g.kind === 'empty') return (
-        <section class="chapter empty tone-video" data-tone="video" aria-label={t('ficha.videoTbc')}>
-          <div class="media-empty"><span class="tbc">{t('ficha.videoTbc')}</span></div>
-        </section>
-      );
       return (
         <div class="tone-light" data-tone="light">
           <div class="wrap">
@@ -168,9 +169,7 @@ const jsonLd = {
                   {s === 'evidence' && (
                     <div class="doc-body docs">
                       {d.evidence.map((e, i) => (
-                        'report' in e
-                          ? <Evidence lang={lang} report={e.report} note={e.note} headingId={`ev-${i}`} />
-                          : <article aria-labelledby={`ev-${i}`}><h3 id={`ev-${i}`}>{t('ficha.evidence')}</h3><p class="tbc">{e.pending}</p></article>
+                        <Evidence lang={lang} report={e.report} note={e.note} headingId={`ev-${i}`} />
                       ))}
                       {publication && (
                         <article aria-labelledby="ev-paper">
@@ -182,9 +181,7 @@ const jsonLd = {
                               <>{a === site.name ? <b>{a}</b> : a}{i < publication.authors.length - 1 ? ', ' : ''}</>
                             ))}
                           </p>
-                          {publication.url
-                            ? <a class="lnk textlink" href={publication.url}>{publication.url}</a>
-                            : <span class="lnk tbc">[{t('ev.paper').toLowerCase()} — link to confirm]</span>}
+                          {publication.url && <a class="lnk textlink" href={publication.url}>{publication.url}</a>}
                         </article>
                       )}
                       {d.recognitions.length > 0 && (
