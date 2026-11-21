@@ -4,7 +4,7 @@ export const site = {
   /** Full legal name: shown once, on the About page, to link certificates and documents to the brand. */
   fullName: 'Daniel Orlando Camacho Campos',
   url: 'https://orlandocamc.github.io',
-  linkedin: 'https://www.linkedin.com/in/orlandocamacho',
+  linkedin: 'https://www.linkedin.com/in/orlando-camc/',
   github: 'https://github.com/orlandocamc',
   university: {
     name: 'Universidad Iberoamericana Ciudad de México',
