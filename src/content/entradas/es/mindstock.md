@@ -4,7 +4,7 @@ title: MindStock
 kind: software
 type: Software
 order: 3
-summary: Sistema de gestión de inventarios con visión por computadora.
+summary: "Proyecto individual. Sistema de gestión de inventarios con visión por computadora."
 year: "2026"
 stack: Java · Python (visión por computadora) · Next.js
 links:

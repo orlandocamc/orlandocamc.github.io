@@ -3,7 +3,7 @@ title: MindStock
 kind: software
 type: Software
 order: 3
-summary: Inventory-management system with computer vision.
+summary: "Solo project. Inventory-management system with computer vision."
 year: "2026"
 stack: Java · Python (computer vision) · Next.js
 links:
